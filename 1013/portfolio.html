@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>我的作品集</title>
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons（社群 icon 用） -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+
+  <!-- 自訂 CSS（少量強化） -->
+  <style>
+    :root{ --brand:#0d6efd; }
+    section{ scroll-margin-top:80px; }  /* anchors 不被 navbar 擋住 */
+    .btn-raise{ transition:transform .15s ease, box-shadow .15s ease; }
+    .btn-raise:hover{ transform:translateY(-2px); box-shadow:0 .5rem 1rem rgba(0,0,0,.15); }
+    .card.hoverable{ transition:transform .2s ease, box-shadow .2s ease; }
+    .card.hoverable:hover{ transform:translateY(-4px); box-shadow:0 .75rem 1.5rem rgba(0,0,0,.15); }
+    .hero{
+      background: linear-gradient(135deg, var(--brand) 0%, #3f8cff 100%);
+      color:#fff;
+    }
+  </style>
+</head>
+<body>
+  <!-- 1. 導航列 -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+    <div class="container">
+      <a class="navbar-brand fw-bold" href="#home">Morris Lee</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="切換選單">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="mainNav">
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+          <li class="nav-item"><a class="nav-link" href="#home">首頁</a></li>
+          <li class="nav-item"><a class="nav-link" href="#about">關於</a></li>
+          <li class="nav-item"><a class="nav-link" href="#portfolio">作品</a></li>
+          <li class="nav-item"><a class="nav-link" href="#contact">聯絡</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- 2. Hero Section -->
+  <section id="home" class="hero py-5">
+    <div class="container py-5">
+      <div class="row align-items-center g-4">
+        <div class="col-lg-7">
+          <h1 class="display-4 fw-bold">嗨，我是 <span class="text-warning">Morris Lee</span></h1>
+          <p class="lead mb-4">專注把各種奇怪的興趣做好，從程式一路到戶外到陌生開發通通都要。</p>
+          <div class="d-flex flex-wrap gap-2">
+            <a href="#portfolio" class="btn btn-light btn-raise"><i class="bi bi-grid me-1"></i> 看作品</a>
+            <a href="#contact" class="btn btn-outline-light btn-raise"><i class="bi bi-envelope me-1"></i> 聯絡我</a>
+          </div>
+        </div>
+        <div class="col-lg-5 text-lg-end">
+           <img src="ZVE07972.jpg" alt="那天的海" style="width:320px; height:auto;">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. 關於我 -->
+  <section id="about" class="py-5 bg-light">
+    <div class="container">
+      <h2 class="text-center mb-5">關於我</h2>
+      <div class="row align-items-center g-4">
+        <!-- 左：照片 -->
+        <div class="col-md-6 text-center">
+           <img src="ZVE07972.jpg" alt="那天的海" style="width: 500px; height:auto;">
+        </div>
+        <!-- 右：介紹 -->
+        <div class="col-md-6">
+          <h3 class="fw-bold mb-3">你好！</h3>
+          <p class="fs-5 text-muted">我是一位 <span class="fw-semibold text-primary">前端 / 全端</span> 愛好者，熟悉 Bootstrap、JavaScript 與 REST API。</p>
+          <p class="text-secondary">喜歡攝影與教學分享，曾帶領小組完成影像辨識 App 與多項專題競賽。</p>
+
+          <!-- 進階：徽章 + 進度條 -->
+          <div class="row g-3 mt-2">
+            <div class="col-sm-6">
+              <div class="d-flex justify-content-between"><span>HTML / CSS</span><span class="badge bg-primary">熟練</span></div>
+              <div class="progress"><div class="progress-bar bg-primary" style="width:85%">85%</div></div>
+            </div>
+            <div class="col-sm-6">
+              <div class="d-flex justify-content-between"><span>JavaScript</span><span class="badge bg-success">進階</span></div>
+              <div class="progress"><div class="progress-bar bg-success" style="width:75%">75%</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. 技能展示 -->
+  <section id="skills" class="py-5">
+    <div class="container">
+      <h2 class="text-center mb-5">我的技能</h2>
+      <div class="row g-4">
+        <div class="col-md-4">
+          <div class="card hoverable h-100">
+            <div class="card-body">
+              <h5 class="card-title">前端開發</h5>
+              <p class="card-text text-muted">Bootstrap / RWD / ES6 / SPA 版型與互動。</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card hoverable h-100">
+            <div class="card-body">
+              <h5 class="card-title">AI / 影像應用</h5>
+              <p class="card-text text-muted">TensorFlow / OpenCV 整合 Demo 與專題實作。</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="card hoverable h-100">
+            <div class="card-body">
+              <h5 class="card-title">攝影</h5>
+              <p class="card-text text-muted">人像攝影</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 5. 作品集 -->
+  <section id="portfolio" class="py-5 bg-light">
+    <div class="container">
+      <h2 class="text-center mb-5">作品集</h2>
+      <div class="row g-4">
+        <!-- 6 個作品項目（lg 三欄 / md 兩欄 / 手機一欄） -->
+        <!-- 1 -->
+        <div class="col-lg-4 col-md-6">
+          <div class="card hoverable h-100">
+            <img src="ZVE07972.jpg" alt="那天的海" style="width: auto; height:auto;">
+            <div class="card-body d-flex flex-column">
+              <h5 class="card-title">作品一</h5>
+              <p class="card-text text-muted">夕陽日落。</p>
+              <a href="#" class="btn btn-primary mt-auto">查看詳情</a>
+            </div>
+          </div>
+        </div>
+        <!-- 2 -->
+        <div class="col-lg-4 col-md-6">
+          <div class="card hoverable h-100">
+            <img src="DSC04817.jpg" alt="那天的海" style="width: auto; height:auto;">
+            <div class="card-body d-flex flex-column">
+              <h5 class="card-title">作品二</h5>
+              <p class="card-text text-muted">打球。</p>
+              <a href="#" class="btn btn-primary mt-auto">查看詳情</a>
+            </div>
+          </div>
+        </div>
+        <!-- 3 -->
+        <div class="col-lg-4 col-md-6">
+          <div class="card hoverable h-100">
+            <img src="A7C00085.jpg" alt="那天的海" style="width: auto; height:auto;">
+            <div class="card-body d-flex flex-column">
+              <h5 class="card-title">作品三</h5>
+              <p class="card-text text-muted">海邊走走。</p>
+              <a href="#" class="btn btn-primary mt-auto">查看詳情</a>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- 6. 聯絡表單 -->
+  <section id="contact" class="py-5">
+    <div class="container">
+      <h2 class="text-center mb-5">聯絡我</h2>
+      <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+          <form>
+            <div class="mb-3">
+              <label for="name" class="form-label">姓名</label>
+              <input type="text" class="form-control" id="name" placeholder="王小明" required>
+            </div>
+            <div class="mb-3">
+              <label for="email" class="form-label">Email</label>
+              <input type="email" class="form-control" id="email" placeholder="name@example.com" required>
+            </div>
+            <div class="mb-3">
+              <label for="subject" class="form-label">主旨</label>
+              <input type="text" class="form-control" id="subject" placeholder="想合作一個 Side Project">
+            </div>
+            <div class="mb-3">
+              <label for="message" class="form-label">訊息</label>
+              <textarea class="form-control" id="message" rows="5" placeholder="想聊聊的內容..." required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">送出</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7. Footer -->
+  <footer class="bg-dark text-white text-center py-4">
+    <div class="container">
+      <div class="mb-2">
+        <a class="text-white me-3" href="#" aria-label="github"><i class="bi bi-github fs-4"></i></a>
+        <a class="text-white me-3" href="#" aria-label="instagram"><i class="bi bi-instagram fs-4"></i></a>
+        <a class="text-white" href="#" aria-label="linkedin"><i class="bi bi-linkedin fs-4"></i></a>
+      </div>
+      <small>© <span id="y"></span> Your Name. All rights reserved.</small>
+    </div>
+  </footer>
+
+  <!-- Bootstrap JavaScript -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script>document.getElementById('y').textContent = new Date().getFullYear();</script>
+</body>
+</html>
