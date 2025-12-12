@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>報名系統</title>
+</head>
+<body>
+  <h2>報名</h2>
+  <p id="userInfo"></p>
+  <form id="signupForm">
+    <label>姓名: <input type="text" id="name" required></label><br>
+    <label>Email: <input type="email" id="email" required></label><br>
+    <label>手機: <input type="tel" id="phone" pattern="^09\\d{8}$" required></label><br>
+    <button type="submit">送出</button>
+  </form>
+  <p id="formError" style="color:red;"></p>
+  <h3>報名清單</h3>
+  <div id="list"></div>
+  <button id="logoutBtn">登出</button>
+  <script src="main.js"></script>
+</body>
+</html>
