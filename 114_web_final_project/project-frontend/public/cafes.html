@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>探索咖啡 - 找到屬於你的咖啡</title>
+  <link rel="stylesheet" href="styles.css">
+
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+</head>
+
+<body>
+  <!-- Navbar will be injected by js/ui.js -->
+
+  <div class="layout-container" style="margin-top: 0;"> <!-- Remove top margin for full height -->
+
+    <!-- Sidebar for Search & List -->
+    <div class="sidebar">
+      <div class="search-box">
+        <input type="text" id="searchInput" placeholder="搜尋咖啡廳...">
+      </div>
+
+      <!-- Tree Tag Search -->
+      <div class="tag-tree">
+        <div class="tag-category">
+          <h4>氛圍 & 功能</h4>
+          <div class="tag-chips" id="tagGroup1">
+            <span class="tag-chip" data-tag="work_friendly">💻 適合工作</span>
+            <span class="tag-chip" data-tag="quiet">🤫 安靜</span>
+            <span class="tag-chip" data-tag="social">🗣️ 適合聊天</span>
+            <span class="tag-chip" data-tag="aesthetic">📸 網美店</span>
+          </div>
+        </div>
+        <div class="tag-category">
+          <h4>特色</h4>
+          <div class="tag-chips" id="tagGroup2">
+            <span class="tag-chip" data-tag="specialty_coffee">☕ 精品咖啡</span>
+            <span class="tag-chip" data-tag="dessert">🍰 甜點</span>
+            <span class="tag-chip" data-tag="pet_friendly">🐶 寵物友善</span>
+            <span class="tag-chip" data-tag="late_night">🌙 深夜</span>
+          </div>
+        </div>
+      </div>
+
+      <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
+
+      <!-- Results List -->
+      <div id="cafeList" style="flex: 1; overflow-y: auto;">
+        <p style="color: #888; text-align: center; margin-top: 20px;">載入中...</p>
+      </div>
+    </div>
+
+    <!-- Map Container -->
+    <div class="main-content">
+      <div id="map"></div>
+    </div>
+
+  </div>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+  <script src="js/auth.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/map.js"></script>
+
+  <script>
+    let allCafes = [];
+    let activeTags = new Set();
+
+    // Initialize logic
+    async function loadCafeList() {
+      try {
+        const token = localStorage.getItem('token');
+        const headers = token ? { 'Authorization': 'Bearer ' + token } : {};
+
+        let res;
+        try {
+          res = await fetch('http://localhost:8080/api/cafes', { headers });
+        } catch (e) {
+          console.error("Fetch failed", e);
+          document.getElementById('cafeList').innerHTML = '<p style="text-align:center; color:red; margin-top:20px;">無法連接伺服器。<br>請確認後端是否已啟動。</p>';
+          return;
+        }
+
+        if (res.ok) {
+          allCafes = await res.json();
+          renderList(allCafes);
+          // Sync Map Markers
+          if (window.markers && map) {
+            window.markers.forEach(m => map.removeLayer(m));
+            window.markers = [];
+            if (typeof addCafeMarker === 'function') {
+              allCafes.forEach(addCafeMarker);
+            }
+          }
+        } else {
+          document.getElementById('cafeList').innerHTML = '<p style="text-align:center; color:#888; margin-top:20px;">無法取得資料。</p>';
+        }
+      } catch (err) {
+        console.error(err);
+        document.getElementById('cafeList').innerHTML = '<p style="text-align:center; color:red; margin-top:20px;">發生錯誤。</p>';
+      }
+    }
+
+    function renderList(cafes) {
+      const list = document.getElementById('cafeList');
+      list.innerHTML = '';
+      if (!cafes || cafes.length === 0) {
+        list.innerHTML = '<p style="text-align:center; color:#888; margin-top:20px;">沒有找到符合的咖啡廳</p>';
+        return;
+      }
+      cafes.forEach(cafe => {
+        const div = document.createElement('div');
+        div.className = 'cafe-list-item';
+        div.dataset.cafeId = cafe.id;
+        div.onclick = () => {
+          // Remove previous selection
+          document.querySelectorAll('.cafe-list-item.selected').forEach(el => el.classList.remove('selected'));
+          // Add selection to current
+          div.classList.add('selected');
+          
+          // Fly to location on map
+          if (map && cafe.latitude && cafe.longitude) {
+            map.flyTo([cafe.latitude, cafe.longitude], 16);
+          }
+          
+          // Highlight marker on map
+          if (typeof window.highlightMarker === 'function') {
+            window.highlightMarker(cafe.id);
+          }
+        };
+
+        const tagsHtml = (cafe.tags && cafe.tags.length > 0)
+          ? cafe.tags.map(t => `<span class="tag-chip active" style="font-size:0.75rem; padding:2px 8px; margin-right:4px; cursor:default;">${t}</span>`).join('')
+          : '';
+
+        div.innerHTML = `
+            <h3>${cafe.name}</h3>
+            <div style="margin-bottom:8px;">${tagsHtml}</div>
+            <p style="font-size: 0.8rem; color:#666;">${cafe.address || ''}</p>
+        `;
+        list.appendChild(div);
+      });
+    }
+
+
+    // Tag Logic
+    document.querySelectorAll('.tag-chip').forEach(chip => {
+      // Avoid re-binding if already bound (though strict replacement handles this)
+      chip.onclick = () => { // Use onclick property for simplicity in replacement
+        const tag = chip.dataset.tag;
+        if (activeTags.has(tag)) {
+          activeTags.delete(tag);
+          chip.classList.remove('active');
+        } else {
+          activeTags.add(tag);
+          chip.classList.add('active');
+        }
+        filterCafes();
+      };
+    });
+
+    const searchInput = document.getElementById('searchInput');
+    searchInput.oninput = filterCafes; // Use property
+
+    function filterCafes() {
+      const term = searchInput.value.toLowerCase();
+
+      const filtered = allCafes.filter(cafe => {
+        const matchesText = !term ||
+          cafe.name.toLowerCase().includes(term) ||
+          (cafe.description && cafe.description.toLowerCase().includes(term)) ||
+          (cafe.address && cafe.address.toLowerCase().includes(term));
+
+        let matchesTags = true;
+        if (activeTags.size > 0) {
+          const cafeTags = cafe.tags || [];
+          matchesTags = cafeTags.some(t => activeTags.has(t));
+        }
+
+        return matchesText && matchesTags;
+      });
+
+      renderList(filtered);
+
+      if (window.markers && map) {
+        window.markers.forEach(m => map.removeLayer(m));
+        window.markers = [];
+        if (typeof addCafeMarker === 'function') {
+          filtered.forEach(addCafeMarker);
+        }
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', loadCafeList);
+  </script>
+</body>
+
+</html>

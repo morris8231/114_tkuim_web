@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JavaScript 測試</title>
+
+  <!-- 解掉 favicon 404（可留可拿掉） -->
+  <link rel="icon" href="data:," />
+
+  <!-- 外部樣式 -->
+  <link rel="stylesheet" href="./css/style.css" />
+
+  <!-- 外部腳本：defer 保證 DOM 生成後才執行 -->
+  <script src="./js/test.js" defer></script>
+</head>
+<body>
+  <h1>JavaScript Console 測試</h1>
+
+  <button id="myButton" class="btn">點我測試</button>
+
+  <div id="message" class="card">這裡會顯示訊息</div>
+
+  <label class="field-label" for="nameInput">這是一個段落</label>
+  <input type="text" id="nameInput" class="input" placeholder="輸入你的名字" />
+
+  <p id="demo" class="muted">（提示）按上面按鈕或輸入名字看看！</p>
+</body>
+</html>

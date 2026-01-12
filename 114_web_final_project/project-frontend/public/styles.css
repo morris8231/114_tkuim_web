@@ -1,0 +1,292 @@
+/* Google Fonts - Japanese style */
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;600&display=swap');
+
+/* Global Styles - Minimalist Japanese Aesthetic */
+:root {
+    --primary-color: #5a4a42;
+    --secondary-color: #faf9f7;
+    --text-color: #3d3d3d;
+    --white: #ffffff;
+    --accent: #c9a78c;
+    --border-color: #e8e5e3;
+    --shadow-light: rgba(0, 0, 0, 0.03);
+    --shadow-medium: rgba(0, 0, 0, 0.06);
+}
+
+body {
+    font-family: 'Noto Sans JP', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: var(--secondary-color);
+    color: var(--text-color);
+    font-weight: 400;
+    line-height: 1.6;
+    letter-spacing: 0.02em;
+}
+
+h1,
+h2,
+h3 {
+    color: var(--primary-color);
+    font-weight: 500;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+    transition: opacity 0.2s ease;
+}
+
+a:hover {
+    opacity: 0.7;
+}
+
+/* Navbar - Minimal Japanese Style */
+.navbar {
+    background-color: var(--white);
+    box-shadow: 0 1px 0 var(--border-color);
+    padding: 0.875rem 0;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 24px;
+}
+
+.nav-logo {
+    font-size: 1.25rem;
+    font-weight: 500;
+    color: var(--primary-color);
+    letter-spacing: 0.05em;
+}
+
+.nav-links {
+    list-style: none;
+    display: flex;
+    gap: 28px;
+    margin: 0;
+    padding: 0;
+}
+
+.nav-links a {
+    font-size: 0.9rem;
+    font-weight: 400;
+    color: var(--text-color);
+    transition: color 0.2s ease;
+}
+
+.nav-links a:hover {
+    color: var(--accent);
+    opacity: 1;
+}
+
+.btn-login {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 8px 20px;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+}
+
+.btn-login:hover {
+    background-color: #4a3a32;
+    opacity: 1;
+}
+
+/* Container */
+.container {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 0 20px;
+}
+
+/* Hero Section - Elegant Minimal */
+.hero {
+    background: linear-gradient(rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.45)), url('https://images.unsplash.com/photo-1509042239860-f550ce710b93?fit=crop&w=1920&q=80');
+    background-size: cover;
+    background-position: center;
+    color: white;
+    height: 75vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.hero h1 {
+    font-size: 2.5rem;
+    color: white;
+    margin-bottom: 16px;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+}
+
+.hero p {
+    font-size: 1.1rem;
+    margin-bottom: 32px;
+    font-weight: 300;
+    opacity: 0.95;
+}
+
+.btn-cta {
+    background-color: var(--white);
+    color: var(--primary-color);
+    padding: 14px 36px;
+    font-size: 0.95rem;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    border: none;
+}
+
+.btn-cta:hover {
+    background-color: var(--accent);
+    color: white;
+    opacity: 1;
+}
+
+/* Map Containers */
+#map {
+    height: 100%;
+    width: 100%;
+    border-radius: 0;
+    z-index: 1;
+}
+
+/* Cafe List & Search Layout */
+.layout-container {
+    display: flex;
+    height: calc(100vh - 60px);
+    /* Adjust based on navbar height */
+    overflow: hidden;
+}
+
+.sidebar {
+    width: 360px;
+    background: var(--white);
+    border-right: 1px solid var(--border-color);
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    padding: 24px;
+    overflow-y: auto;
+}
+
+.main-content {
+    flex: 1;
+    position: relative;
+}
+
+.search-box {
+    margin-bottom: 20px;
+}
+
+.search-box input {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    font-size: 0.9rem;
+    box-sizing: border-box;
+    background: var(--secondary-color);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.search-box input:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(201, 167, 140, 0.15);
+    background: var(--white);
+}
+
+/* Tree Search Tags */
+.tag-tree {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.tag-category {
+    margin-bottom: 15px;
+}
+
+.tag-category h4 {
+    margin: 0 0 10px 0;
+    font-size: 0.75rem;
+    color: #999;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    font-weight: 500;
+}
+
+.tag-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.tag-chip {
+    background: var(--secondary-color);
+    color: var(--text-color);
+    padding: 6px 14px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 1px solid var(--border-color);
+}
+
+.tag-chip:hover {
+    background: var(--border-color);
+    border-color: var(--accent);
+}
+
+.tag-chip.active {
+    background: var(--primary-color);
+    color: white;
+    border-color: var(--primary-color);
+}
+
+.cafe-list-item {
+    padding: 16px 0;
+    border-bottom: 1px solid var(--border-color);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.cafe-list-item:hover {
+    padding-left: 8px;
+}
+
+.cafe-list-item h3 {
+    margin: 0 0 6px 0;
+    font-size: 1rem;
+    font-weight: 500;
+}
+
+.cafe-list-item p {
+    font-size: 0.85rem;
+    color: #888;
+    margin: 0;
+}
+
+/* Selected cafe item */
+.cafe-list-item.selected {
+    padding-left: 12px;
+    border-left: 3px solid var(--primary-color);
+    background: transparent;
+}
+
+.cafe-list-item.selected h3 {
+    color: var(--primary-color);
+}

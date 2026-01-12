@@ -1,0 +1,70 @@
+/* 基礎排版 */
+:root {
+  --bg: #f0f0f0;
+  --card: #ffffff;
+  --primary: #3498db;
+  --primary-hover: #2980b9;
+  --text: #222;
+  --muted: #666;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "微軟正黑體", Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  padding: 40px;
+}
+
+/* 標題 */
+h1 { margin-top: 0; }
+
+/* 卡片區塊 */
+.card {
+  margin-top: 20px;
+  padding: 20px;
+  background: var(--card);
+  border-radius: 8px;
+  font-size: 18px;
+  line-height: 1.6;
+  box-shadow: 0 2px 8px rgba(0,0,0,.04);
+}
+
+/* 按鈕 */
+.btn {
+  appearance: none;
+  border: 0;
+  border-radius: 8px;
+  background: var(--primary);
+  color: #fff;
+  padding: 12px 22px;
+  font-size: 16px;
+  cursor: pointer;
+}
+.btn:hover { background: var(--primary-hover); }
+
+/* 表單 */
+.field-label {
+  display: block;
+  margin: 24px 0 8px;
+  font-weight: 600;
+}
+.input {
+  display: block;
+  width: 320px;
+  max-width: 100%;
+  padding: 10px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 16px;
+  background: #fff;
+}
+
+/* 輕文字 */
+.muted { color: var(--muted); margin-top: 8px; }

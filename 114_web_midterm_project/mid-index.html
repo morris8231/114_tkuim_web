@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>水果挑選指南</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- 導航列 -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-success fixed-top shadow-sm">
+    <div class="container">
+      <a class="navbar-brand fw-bold" href="#home">水果挑選指南</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="切換導航">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarContent">
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+          <li class="nav-item"><a class="nav-link" href="#home">首頁</a></li>
+          <li class="nav-item"><a class="nav-link" href="#tips">選果技巧</a></li>
+          <li class="nav-item"><a class="nav-link" href="#fruits">水果清單</a></li>
+          <li class="nav-item"><a class="nav-link" href="#contact">聯絡我們</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section id="home" class="hero-section py-5 mt-5 bg-light">
+    <div class="container py-5">
+      <div class="row align-items-center g-4">
+        <div class="col-lg-6">
+          <h1 class="display-4 fw-bold text-success">挑選新鮮水果的祕訣</h1>
+          <p class="lead text-secondary">想要每一次都買到甜美多汁的水果嗎？透過我們的指南，了解如何利用外觀、氣味與觸感判斷水果的新鮮度。</p>
+          <div class="d-flex gap-2 flex-wrap">
+            <a href="#fruits" class="btn btn-success btn-raise"><i class="bi bi-basket2-fill me-1"></i>瀏覽水果清單</a>
+            <a href="#tips" class="btn btn-outline-success btn-raise"><i class="bi bi-lightbulb me-1"></i>選果技巧</a>
+          </div>
+        </div>
+        <div class="col-lg-6 text-center">
+          <img class="img-fluid rounded-4 shadow" src="https://img.ltn.com.tw/Upload/health/page/800/2023/07/12/phpLASKRP.jpg" alt="新鮮水果圖片">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 選果技巧 Section -->
+  <section id="tips" class="py-5">
+    <div class="container">
+      <h2 class="text-center mb-5 fw-bold">選果基本技巧</h2>
+      <div class="row justify-content-center">
+        <div class="col-lg-10">
+          <div class="alert alert-info" role="alert">
+            以下要點整理自農業與食品專家的建議，協助你快速掌握選購新鮮水果的原則。
+          </div>
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item"><strong>避免明顯損傷：</strong>不要挑選有瘀傷或破損的水果，這些部位容易藏有細菌，營養價值也會降低。</li>
+            <li class="list-group-item"><strong>輕壓感受熟度：</strong>多數水果在成熟時會略微柔軟，輕壓表面應有微微彈性，只有蘋果應保持偏硬。</li>
+            <li class="list-group-item"><strong>聞香辨甜度：</strong>成熟的水果會散發甜香，香味愈濃郁代表愈成熟。</li>
+            <li class="list-group-item"><strong>選擇顏色鮮豔：</strong>鮮豔且均勻的顏色通常代表成熟且含有豐富植化素。</li>
+            <li class="list-group-item"><strong>選擇當季水果：</strong>當季水果價格較低且風味最佳。</li>
+            <li class="list-group-item"><strong>購買散裝：</strong>散裝水果通常品質較佳且可以自由挑選，避免預先包裝的較差品。</li>
+            <li class="list-group-item"><strong>用前清洗：</strong>食用前請以清水沖洗水果，減少農藥殘留與微生物污染。</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 水果卡片 Section -->
+  <section id="fruits" class="py-5 bg-light">
+    <div class="container">
+      <h2 class="text-center mb-4 fw-bold">水果挑選卡片</h2>
+      <!-- 篩選與搜尋工具 -->
+      <div class="row mb-4 g-3">
+        <div class="col-md-6">
+          <label for="categoryFilter" class="form-label">依類別篩選：</label>
+          <select id="categoryFilter" class="form-select">
+            <option value="all" selected>全部</option>
+            <option value="pome">仁果類</option>
+            <option value="tropical">熱帶水果</option>
+            <option value="berry">莓果類</option>
+            <option value="citrus">柑橘類</option>
+            <option value="melon">瓜類</option>
+          </select>
+        </div>
+        <div class="col-md-6">
+          <label for="searchInput" class="form-label">搜尋水果：</label>
+          <input type="text" id="searchInput" class="form-control" placeholder="輸入水果名稱">
+        </div>
+      </div>
+      <!-- 卡片列 -->
+      <div id="fruitCards" class="row g-4">
+        <!-- Apple card -->
+        <div class="col-lg-4 col-md-6 fruit-item" data-category="pome">
+          <div class="card h-100 shadow-sm hoverable">
+            <img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAkGBxMTEhUTEhMVFRUWFRcVFRUXFxUVFxUXFRUWFhUVFRUYHSggGBolGxUVITEhJSkrLi4uFx8zODMtNygtLisBCgoKDg0OGxAQGy8lICUtLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLf/AABEIALcBEwMBIgACEQEDEQH/xAAbAAACAgMBAAAAAAAAAAAAAAAEBQMGAAECB//EADsQAAEDAwIEBAQFAwQBBQEAAAEAAhEDBCEFMRJBUWEGEyJxgZGhsRQyUtHwQsHhIzNi8XIVFoKSogf/xAAaAQADAQEBAQAAAAAAAAAAAAACAwQBBQAG/8QAKBEAAwACAgICAgIBBQAAAAAAAAECAxEhMRJBBBMiUTJxYRRCgZGh/9oADAMBAAIRAxEAPwCu6/TaXEgpG16Yam0+c4CTJ2R2keG3PPFUwOi5OL+Je8LutQhRTcTsEQ1rv0n5FX+y0yiwflCN8ikf6QvOdlc/DpLlnm7KqLp1FcbzQqL9gAVW9R0CpTyzI6JV4wLwXIO16Jo1UiddwYOCOSKt7qUmsLEy9vQ+FxAQde6Q1S4wg31k/HKlHZwYVMk1WuoXXMIOrWUL6idyP1oO/ETzRNnckFJg5EUay03gu2m320FXLTL7iGSvLrK7gp/baiRsU6K0c75Xx1k4L7VuGN3KX61qLRTJHRKLcGsPU5J/FNXy2cMpmS347ObhwL7VLE9xfEkqFlxlLDXRFtTechpj2XPaZ9ItSh9a3RHNFnUwBlB2OnVHiWqG70etyWJsFuH7C3auOSHq6hPNL3aNccghbiyrsElhjsi02ZuV0FXFypLXURsSkNa6OxQ4uIRzLMdr2XWndcWAtPEJNodxuSjqt0Cvb5BrnojuK3UqIOXNQgqIOWNnl0SF0LT3rlxUTkISGOmn1D3XVW4PE7/yP3XGkH1fFBVLj/UcP+R+62exC/mxgHhYhRVWItnhvbWjGuLjkpq2sSMBI7KrxFWW0YAEq71whkY5xrgDNzG6kbeqDVmgbJR50FCrKZSpbLMy5RdOsCMquW1xKPo1k1UDeNGar4bp1vUBBSTUtLFFvsrTSuISjxY3jp8TdwjVJLRz8nxPzVop9WuhX1VC+queNeU6KlZIXLklEafYVKzuGm2e/IK+aJ4CaIdWM9uS1tICsqns88YwnYE+wlTttKn6HfIr2mhpNvSEBjfkseaX6QsVbFLO30jxprnN3BHuCjra9XpN3Z0X/wBISC/8LsMlmD2RrYxWn2BadqnCRnCh8VVTVA4MmUq1Gwq0eRI6pjo1UES5erJqdMF4FVq5C/DvhgYdUyVdqOn0w2OEJJb3wAXdXXABulS17CyY7fRLegUXDh2KJa4OgpFU1BtU+opla1WAbrfFNiLnJK4GLQOimqU2OGQgDdt6oa41GBhFpGTNsSeKPDjHAuYIPZec3lFzHcJXqz7yQZVH8Q0ml0hGtIc4dLRzprYpytPqFcW1T0Qtkqd9lC4RKypKwqMBZxrxh1xLvBUJMrGkdV49ob6QzKr11Uio/wD8j91ZNDcCqrqjh5j87OP3W4+WyS78aZL+JK0lnnFbTvrFf6lFss60FWKyvcKqUno6hcwo6R1mtoaajcSUuOV26pxKJwKxcDJ4WiahV4SmNGvKS8SKt6iNM1oe0qmFqrDmlp5oBtdZ+KC1sFIo+s0vLqkd0ToOlOuHAD8vMojX7M1Kg4eZyrpoVu2jTAG8JtZNQv2QVD+x/oa6baUrZgDQJRD9WJBIIAG5Mx9Eqr3DSYcTJB4QADLuQM7DuowabASSDnvwyPo5DC32Z4r+2MxVqVBJcA3rtI7SiqVswnBnE/8AaVfiZaH8UiYAIAjHQ/spraT+UESRkcwN9wU16noW1Wu9Dg2tM44ZI2In+yjfQZJHEBOec/JFMaWt/wA5+SAfTBcHncOkfP1D5JU5t1oTD2+yGrYcQj8wiQTBkH7qu3mknj9DSBuI/ZWxjfUQDgyQdjnkVlZo4t84H1z9/ojdy+GURlcso2r0atAgPBgjDoMH4pSbgr0G/qU+BzH5aTHDAO2cdEk1Tw6KjG+QGtPWCCR3A/N8EEyq5krx5+PyKuy6gor8ceRUF9o9WnwnDmuPCHCRkbgg7J7ougtA4qmT0WuWMqp7A7a7dyko7heeSf0bek0YARFWk3h6Ipjfsky/JmX0U3UHvaNiqzfVid16FXtC54/Sh9Q0Km4flRLG0AvmQ1o85tLuDBTAvXGqaQ0OJZyQrbqMOQ0k+UbN0v5BbnKNzlx54K5L1iQxUmSiqoy5cOcueNEkFss3hobqv6vp5FR5jBJ+6f8AhZ0yjajGOBneT90uG1TI82PzbKGKPZYnle2AcVib9jEfQiJjlO2sgWVF0Xpbk7CoZsrKVtSUpZWRluHO2aUtxoZNIIJXTKsJjaeHqrxJwE2tvDlMD1kkrPEGs8L2Vx1yhbi5I5H5K7ttqLNmgpja21J27B8l5OU+WBXyEl0eaadegvyrE2pxDMwQe04zlWa+8MWsF5aGgAku2gDcqo1KoyGkhgngbv3LjOwwiaTYmcqrlBlGpTg+kcLZlzvngD4rniBIcWkjlj5dFAymCAW8RaXQDEk78hjkjX1yTwxwwAMjMI29I90S2dATxcMBxEcsDHfKt9m+YPCB1yTP7Ku6YwES8u/4hO7WuNsKfJletEfyab4G5GJj5hLbyh23Hw/nZFtujESYC2Yd2U85NUQ46c0ImVuFsE8/ooXXEEdM/Pmpr+m0h7chwwDAh2d8bbbqoXGqQIONxnl1R5vPfHTK3fj/AMjjzw53E6Dmc7BadckukGAMwOfd3Udkgt9Ta7GIG8mNs/FMqVDiyDnl/Oq3G3j/AJFOHJPtjGrdMqxMBzRzMAn+dUO+tEGd+U/XuO64oadwniJPPmOnT3Rl1bA0wWM4hJEnBj/ieatilaKfxT4CbO7pxlS/iaZ/qVN1Koaby0EkciQQfiDzQtO7PVasjky/hzk5Ze7moC2GuEpfWFQDLxlVwXhHNbfeE817z2AvgTPRJdUGtkzJKq+o0gSU5q1kDXtycoZemUPCvHRW3VC0wpWXCkvaK50nRa9d0U2Ej9XIKv8AFztnIv7Md+K5M85YKqv2lf8A85EA1nknoMBG3ngG3iG8QPWUn7JHpU/ZXfCVTDkqOpEOdnmfurHbaE62cWTxcU8KpWoafXpuPHTcMnMSN0GOVVMyrqOdBFS/JMrSSurFYqvoRN/qx15iL06yqVncLB7nkEBTpOLwyCDMQr94fsvLbA3O6mulJ0Ybol0bwi1sGoQ4q122jsGzELYsjMpxSvICS8iF5LfSJG2wDYCqmt3pozIkK4WVwDkrd7Z29X/caCk5J8ntMit0q2ef0tTDmg9U10as55wDCsf/AKNagAeW2FxdVadAf6bQEuYbrbNl3b1oWeKbk06baQBJqy0noBkj3I+S88q1S88LSILpETGJAg+x+isPiTWD5zXn1Dy3jhOzS4cJI7wVUmVDjMQPTGIE9uarlaR0MEeC0yyaQwku2wDiYGNz2HUruwuh5j4AMmAenWJ5TzS66oQ1sSTAknkSFLTeGtAaPVMl39kFPa0HWmh/+J4RJzjcqSnqIMbzzM7/AASCneeZDG/HPz+CKt2APLQZjbolaEfX+y2Wd0DG8ohzozKU2eMzyHxOyZ0ROSpqlbIblbArNtXzHcA33n4fTf5oHxHoVK4c4tBp1Q0gZPCT/TLeeZ+fNWa3eGnH86pbqldjnEtPurMOXy4fobNrI9NHmdfQ7m2dxVGEg/1N9TDHWP7wnOlXJDQHAyrIKjjTgxDnEt5uAA29tiiLPRKDgHkcLjmWnB5SB9UWePNcGVh8OUxa+pIE/afopNL1BlEQ4hzCSS0bsO0xyGx6fVN7nSGOaWgmeU/5Sb8GWc55H9j0XsEVPZVhpOdMF8WNFRhc0DkRtymTjrCpQcr7qFGnwFkcDiOfaTHQCeYVCuWw4qikX4XqdEjayl8xBSu21EGh/kgx6yi+cKNzk80mxAAed+S8BT4NWHhpjhxVB3jkrHZ1adMcLQG9glVe64N3fDok19qYGzpK0jvl6LsdYa08JcEQ27DgvM6N0SZVk0zUSIkoHWglg2tjG9JNdg6Spq7hxcL4K4uqTapDmuhwChGnOJEumMnulvy9E/5w+jb9FtSZNNsnsFtM6ds2BO6xD52b9slXutMYHccevZS2dwAUW6qyPU3B5kxwwl19TaDxNOIx3Tss+0VJeW+BtSvgTATAXQ2lUy3u4E80ZQvMzKmaFZMOi3fiw0boRusSYlJbm+9KFoTgrAJxrW2Wy4u3cMzlKLy8e4AHqpKQe4QMDqVLTsHHeCOqNRXYWOpl8lO16oSQDGBwjIPPiJjluR8ELSpcW0DpMcukrvXmltd7TgtMfYY+6ifUHDwjkIBTvSDfYyqXzHtaxshwOSdjA5FB1XcQgHYZ90vozyxyJRRqACAc/dec6fBukgiyfwZ5phQuCTsQlVCpHv1TCyrguH8lKsVfey1WJwJTOk/IEwq1QuoPbkEc64MKakc/JjbY1dcHjaAf6gCfult8TxFkHcx/dCV7gRg559kNRuDucx3Tcf4ofijxQQbo8QAwRzHL2/ZWfTg00mgjI6HPuq1oNIVK4BG4d8+SstOn5cNg8/vgfdN8+Nm5qSWhzUpSBtgRxc+2Eo1DTvzVQYMS4cjA/wAJkyrIHw+yjvngtI6g/wCEKztMijLU1wU/WLoPbw9sbY7EKra5ZDy21WuBIw8ZnOxyO0Jxr7eFzSBuRHQgiYPcfZJtevKYoBoDuNz+ImRwgREREk781Yq2dzx8YTQh4lsvQvmLu2bxuDepW6F/b6Q40qnxuE7BPXX3DgDbAKVMdwelnJcVrnlKX7KWuDm7uiXZQj2hZcOGFgcvAKN9klqyEeKiDpOKJaUFDUtDWlcxv9EbbXxkJCKiJo1sgIF2b4cFsGoN6LEia49Qtp+yf65JadxxtqemeHeUsrkBvYjA6f4XYunNb6Rh8Fx6RiEFVql7Dn8nLsV7tBwkmAXDuHbYphpFFz+gHU4CCqUDU4GtEdSfurLoNuzIALuHmdp7BZ4J9gZr7N0rGMupueOyZ0WvEcNADsYlHWby3DgSPbCZtrAAl0NHKYlFKldEN52uNALaR4fW2J/TghDMsXB0tc4jmScI+pqDC6AZxvhR1z0cBiY9llTVMmrLkl8I8/8AGdHgunEmZ4T/APn90lZmceye+NAS+m6ZBBE92nb6pBbuJ4vaf+lnjpaLcdNwm+wh9sQGwfh77qJuDlS06kgShZl3ZZO/Y2K2S0snsmVEgZ26IGmwAd10anJDS8jXzwO7VxMDmdvZN6r+E/Aj5tISHTqxHqU1e7cTElTNaYmp5CLd85OyKoOGcHO3z6JZ5uICKoViARH+FhmhjRAZBHRONOuvU1zpO/uq3TuJ35I+ldDiPDtACzXAuo2iyUrnPxU1SpgpDUrwN+6xt/Lf50lCo9iVg9iXxTTP5wSQHREyBOcdFS9aqACOc4+AzPzCtur1j5Zb1dMb7/4BVG1iZ9l0MC21s6WSnPx2gQ1UXpbvXPRKDUTjTSOAFV5J1Jz/AIuTzyf0NKlaVC9yjc9cl6m0dd2jbnrbSoC5dtct0KV7YU1/RTMrIEPXYehcjlkQxZWnBU9KqJQFrSe+eBpdG8CYTfS9DqVGF7nCmOXFiesIHOg/OUts3+I7rE3Z4SkT5hPcAx8Fi3Yr7sf7Kq6uYgHn98whfxAAIkyT81lYkMHdKK9Uh3eUyJ2Iy/J8E9Fp0+8xwxyji5jrCtOkO4AAOYmO3UqkUK4AbwmYz8e6fUdWcA44l4gf8R2SLbTFWtzod32teoNDoHOEoudYc50tdhsxxdPZJqlU5lCuqdVs7CjFK6GVxqLnRs2MyN/mirjX3EQQ0xzO/wAFXnViuXuJCYtoOtPsM1bU/MY1hP5TIiIE7pbT3jsoHOIII3BkfwrllT/KZrgRVegxlUgjK04gyuKlQH3XVIb4Q/5CmkyWlUKIpCcoU9AiKeM/NDQ7fAZQeZ7ALoVDMoGlUM+6K4pIACTU8gNB9AQeI7clxRuJcSULd14EIenWIxz5oVG1s2J2PW1MCPiibd0OHzSmjyzup/Mgg/EpTRnj6D9QvsEBT0aoDQOcSfiNvqkNaqHHJ5/9rk3pMgbmAI68kaj0G440jqpNR/CHwZgTMBsGTPsjG6HabVHueZMnYGeyyy0R72MfiHjeYI+CJGjsDhTNQlxEgRE/yFSla6QGTPiX4tiyt4DtnZZWqNk4mCPYc13eeERTp/6MkjmTg9fZMKd7Ua802jbHFH0Ca0K7uf1RfbT4ZmLFCflKR5/daa+m0uMEDB3ET2KCL16ZfWLKrS0j4hUPXNFdROJc37Ik9h3LS/EWBykBQzHqQPRNCJskRlnaPeJEAbSUA0yYGSVbbN7W0msjbJO8nEgn5oWNx88hujWpp0yInPF04j37I+nXh3HUgkRwt3j25JadTMEbA/ZbpV2kmcmJAmEqnybtssDNeMLaqta4bJ3HaVtZsH6p/RX9WqjYbDZV/jl69E1Pw3ZfiPKF0WkkN4AOKHHHDx7Tnbklmu+AX0XA0OOo078XCY+Lf2TsNzK0zmNu2hNavACKbc5CDtxwuIcCCJBBEEHoQV3TIJQtLZ0sdLQV53pPJDArqq/CHe5eSGOtElV67LsKCZXTn7rdAVRC9QMOYxnmTAB5ElSOchqoTZRLlfsnZUwiG1DG6V06kIptRbePQGPKmH27xmfmpPM4uwQVN2FvzEpzyUqxjTIlTsqgc0rZWhaFfqgcbN8kN31m7/z3Q7agmUvfcSs85asegouUN6d3B7LLjUCZjZKfOUT7jkvLEthvLE8jAXUD+6KsatPhMyKhcOB4/oAMl0Dc9kgfVMwREGCiaFRG48QIzKno9Wt9WoPjhLJjGRPyKiq6lTYYJz1IE56RsvO6VRE0aix5K0GvgYW/Iu7r9rv9vhDupEhQMuJPqAa4Zgcx17qu2txGxTihU4onMZ6wk+Tp8lSxTjXCG1KpO0d0FqVvxN4iWwNwSBj4rn8RBxugb7URs4SOaZPHAvne0VfW9N4TxMEcy2fqOySmorLeXbXOkDO37JBqOaoIAHFG3XnhPh74ZD8mNflIbZ0CIJ3PLoEcy5yMwJ+SDqV5ztiMY2RNvpdd9PzGUajmfqDSQY3jr8EquSqXMpJEtxVJcfUXQN5n5Iik79vmk7Xx25Jhb1JCTaBuxlUtxKxR/iAsSORP2MWaFoYf6q73NE/lblzuueS9LsNRosa2m2Who4QDkx8fze5VR0VnpBycfBWCjSBGWg8hPX2RXlp1yc/G4XZHrug07gFwPqEAkAA9th91SdR03yXlskiYyIcPf9wr5UcWNw0QdwMSq7rVfibwublscJOSB0MjocFMVlcNlW3KHecrqu7hd2O3f2QxeqZR55edMID1yXKAVFhci8TPsOyVFUWuNcOcjUiqtaI6jVw2tGF24od6cltckdPT2g1tYQuvNCWOJ6qS0Y97g1uSf5KFwlyEvkV0Guroq0salQSwf9JvpPhYwHVcn9PL/KtlrpvCAMAKTJ8iVxBbixVXNlSoeHTEvcfYYTG10amMBrTPX1H67KwVKJcRwx2K5bZxuBkxM9N1M8l17OhixY5XQFQ0VjjinTABj8rflsorjwyw70WEGYiW7c/SnzLcN5mB0/dTupQ0unA7jAO/vsvKq/Y1+D4aX/RUqngphBLHlmMA+sT9/qldx4auabS7gD2tySwgwOpb+b6YXodjXBMRDT1zHfsmtG1aXB0wR2weWRzTpuvfJPkxRD60eM03oqm9X3XvAbagL7aGVNyw4Y/2/Qfp9159UY5jix7S1zTDmkQQRyK3aYWLKugynUR9vcwkzHKZlRC5LFW0Oq916fhgpNfXJO+OvRZUr4R2iaV5hbUqfknAgniO3LPwgyi37EvjgWW+lXFWDTpPIOzvyj3BdAKsWj+CGR5l1VyCQKdMj4y9w78hyT6jUzAJAmM4A7x/ZcvLQ7D5APTfOf3WPI0uCf603yRUvDdkD6abnAj+pznbHflE5+SfcRaA2mRDQAGnZoAwABsEtfUbksBa2TkuPvtHdbqOP5iCARsDk9Nwh8jdIaMPEOCpBB3EAjsFzX0C2d+aiyeobBPxEJfTuoRzLzij2yhVC7T9AB8IW/IPHYPMfVaTkXMYWIhW/wDBVNPqVXiW0abIMHiBJ2mZ5pnxVGZfwvEENiWxxb8MYlK6VRolzWwQOZLhvE55oqyr1IkH+Tuo7y7OYFPrsc0ATPMn6YSPV7B7iCwT6YAaMwMbBG3l61hlx9XMduhUFHUmjcfzplbhmm9+izBjrtFe/wDadxXjLaYmfUZ3iYDd090vwHQpkOrudXGxaJaB3gGT80woarMhuPZGW9+G/mM+6u89LWxjx870CUvA9i6Sabm+owPMqbfND6h4JsscDKgIOeF7jP8A9pT38e084Huuq1zSgZQ+b9MOY55RRtT8BN4Abd7g4YeKuzjyILR6fkqfqmj16H+7TcB+oepp/wDkMfNevisCeJswJ3OVjrgACZIlbHyKnvk2viquuDw4uXDivUPEfhChcTUo/wClUOTj0OPdo29wvNdQsalFxZUaQRz5H2PNW4s05Ouzm5sF4+X0DNYXEAAkkwANyTyC9L8L+GW0Ghzs1HAcXOP+I7JN4B0qZuHDO1Mdv6nf2+fVX6m4CT0Ufysrp+C69jfjYf8AcyB9Ig8s7TyQjqgkiJ+ax92TOdsfNQcWSBtvOfVtspvFHVmNdhFav6gRjECOWFttUiPVO5jpO+/VAuqffOO+wRj7wNjhHqO3OBEGQtSHKeDYvCScu7RHx5LpjmkiASfp2CG4i3ocZWNqF0EA9DvGFqGpL0HC4h0tIbG4O3+Eztr2RDuQg5jP/FIKlN+xbicfFFUHHLSYj4h0Rwj33TUDcpotNvfuaASZE9tuYMKv+MbOjdsNRkMrsHpJx5jRksPUjl0noVK69jh6GQ49gJA98KS9psqNPCWyJ+nVF4+0SfVKpN/+HloMGDupA9Ga3Rg8YGf6v3SrjRLkbVOHpjfRbVtWq1ryGtzJO2ASArN5sflxHpaBiBmT2lItLYWMnmREdMyT2OQPgmlSr6sb7noOwSLrk3+wt9QgBpMt3j33x7LVO5g9EudUg9VI1+N9+SDyN0MKlw4gmeeevyXLASQAeKMjO3tKDbt8Vvijb/pY2wdfoYMdOJAUtvUICAa7opG3MBFLFsYOu3dfqtpXVvASViZsX4HDbcnngxMbmP7Ii5vRRZjc7dO62sUMynSTOZjSdJMq1S+LnlxyZkyu6VWeXOVpYrWtI6kvSCm3ZG2I590TQrl2Sff3WLEDG+gr8QO4PQbLQrAczM7clixeQcrka2tYOAkfELbm5jhBnGSsWI9A9Mkpl0YjGPbKG1HTKNywsqM4uYOxB/UDuCsWLNa5QTSae0L6FMUB5YEBgge3JcV7/BA5lYsS12LxQt6AmO4p+f1UprjEdO60sRFDXJhqbQt0GEkkLSxeR5PQzo0Ng4z/AJTKlRPLHZYsTEhdUycWvUrRt2jcLFiakJ8myN1qzuozYk7OhYsR+K0edNMDudEDwePM80guvCpY5rmOkAiQeixYl9dDl+evI68stJb3Me0rKTicfBYsU1G1w2bcSQJ5YCkY30z3haWLD2+CWg+CR1XQO+VixagKI/Ohb86YCxYtMfR0azf0/dbWLEQs/9k=" class="card-img-top" alt="蘋果圖片">
+            <div class="card-body d-flex flex-column">
+              <h5 class="card-title">蘋果</h5>
+              <p class="card-text flex-grow-1">選擇表皮光亮、顏色均勻且重量較重的蘋果，應手感扎實無軟點。避開有瘀傷、切痕或孔洞的果實。</p>
+              <button class="btn btn-success mt-2 toggle-detail" data-target="appleDetail">更多資訊</button>
+              <div id="appleDetail" class="collapse mt-2">
+                <ul>
+                  <li>儲存：常溫可放置一週內食用；若想保存更久，請放置冰箱，並遠離氣味強烈的食物。</li>
+                  <li>避免損傷：受傷的蘋果容易腐敗，優先食用或切除損傷部分再用。</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Banana card -->
+        <div class="col-lg-4 col-md-6 fruit-item" data-category="tropical">
+          <div class="card h-100 shadow-sm hoverable">
+            <img src="data:image/jpeg;base64,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" class="card-img-top" alt="香蕉圖片">
+            <div class="card-body d-flex flex-column">
+              <h5 class="card-title">香蕉</h5>
+              <p class="card-text flex-grow-1">挑選均勻黃色的香蕉，表面出現少量褐色斑點時風味最佳。購買未熟青香蕉可在室溫放幾日成熟；完全褐色則表示過熟。</p>
+              <button class="btn btn-success mt-2 toggle-detail" data-target="bananaDetail">更多資訊</button>
+              <div id="bananaDetail" class="collapse mt-2">
+                <ul>
+                  <li>避免壓傷：不要購買有明顯壓傷的香蕉。</li>
+                  <li>保存：常溫、陰涼乾燥處保存，成熟後請儘快食用。</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Berries card -->
+        <div class="col-lg-4 col-md-6 fruit-item" data-category="berry">
+          <div class="card h-100 shadow-sm hoverable">
+            <img src="https://img.shoplineapp.com/media/image_clips/66c836aacf61a90019342ba2/original.jpg?1724397226" class="card-img-top" alt="莓果圖片">
+            <div class="card-body d-flex flex-column">
+              <h5 class="card-title">莓果</h5>
+              <p class="card-text flex-grow-1">新鮮莓果應顏色鮮亮且果粒飽滿，表面乾燥不黏。不要購買底部有被壓碎或出現霉斑的包裝。</p>
+              <button class="btn btn-success mt-2 toggle-detail" data-target="berryDetail">更多資訊</button>
+              <div id="berryDetail" class="collapse mt-2">
+                <ul>
+                  <li>保存：需冷藏，並保持通風乾燥，可保存 1～3 天。</li>
+                  <li>檢查霉點：購買前打開盒底查看是否有被壓爛或發霉的果粒。</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Citrus card -->
+        <div class="col-lg-4 col-md-6 fruit-item" data-category="citrus">
+          <div class="card h-100 shadow-sm hoverable">
+            <img src="https://japan-food.jetro.go.jp/assets/10341012200.jpg" class="card-img-top" alt="柑橘類圖片">
+            <div class="card-body d-flex flex-column">
+              <h5 class="card-title">柑橘類</h5>
+              <p class="card-text flex-grow-1">選擇有香氣、表皮光滑且重量較重的橙子、檸檬等。避免表皮皺縮或乾癟的果實。</p>
+              <button class="btn btn-success mt-2 toggle-detail" data-target="citrusDetail">更多資訊</button>
+              <div id="citrusDetail" class="collapse mt-2">
+                <ul>
+                  <li>保存：大多可放置室溫保存數日。</li>
+                  <li>注意外觀：表面有軟斑或變色可能已過熟。</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Melon card -->
+        <div class="col-lg-4 col-md-6 fruit-item" data-category="melon">
+          <div class="card h-100 shadow-sm hoverable">
+            <img src="https://cdn-www.cw.com.tw/article/202108/article-610a74dcb2d13.jpg" class="card-img-top" alt="瓜類圖片">
+            <div class="card-body d-flex flex-column">
+              <h5 class="card-title">瓜類</h5>
+              <p class="card-text flex-grow-1">選擇形狀對稱、芬芳且沉重的瓜類。西瓜與哈密瓜外皮應呈現不反光的霧面，敲擊時應有空洞音；哈密瓜成熟後外皮由綠變黃。避開有軟斑或裂痕的瓜。</p>
+              <button class="btn btn-success mt-2 toggle-detail" data-target="melonDetail">更多資訊</button>
+              <div id="melonDetail" class="collapse mt-2">
+                <ul>
+                  <li>保存：完整瓜可放室溫，切開後需密封冷藏。</li>
+                  <li>成熟判斷：聞瓜蒂附近有甜香，敲打聽音色。</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Pear card -->
+        <div class="col-lg-4 col-md-6 fruit-item" data-category="pome">
+          <div class="card h-100 shadow-sm hoverable">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQV76utbEknU8GNrR_CYLxQe2_S2PlGqohnXg&s" class="card-img-top" alt="梨子圖片">
+            <div class="card-body d-flex flex-column">
+              <h5 class="card-title">梨子</h5>
+              <p class="card-text flex-grow-1">梨子多在未成熟時採收，挑選表面光滑無瘀傷的果實。成熟的梨子靠近果梗處輕按會微微凹陷，帶有淡淡果香。</p>
+              <button class="btn btn-success mt-2 toggle-detail" data-target="pearDetail">更多資訊</button>
+              <div id="pearDetail" class="collapse mt-2">
+                <ul>
+                  <li>保存：放室溫催熟後，再移至冰箱冷藏，可保存 1～3 天。</li>
+                  <li>避免損傷：有傷的梨子優先食用或加工。</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 聯絡表單 Section -->
+  <section id="contact" class="py-5">
+    <div class="container">
+      <h2 class="text-center mb-4 fw-bold">聯絡我們</h2>
+      <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+          <form id="contactForm" novalidate>
+            <div class="mb-3">
+              <label for="name" class="form-label">姓名</label>
+              <input type="text" class="form-control" id="name" required>
+              <div class="invalid-feedback">請輸入姓名。</div>
+            </div>
+            <div class="mb-3">
+              <label for="email" class="form-label">電子郵件</label>
+              <input type="email" class="form-control" id="email" required>
+              <div class="invalid-feedback">請輸入有效的電子郵件地址。</div>
+            </div>
+            <div class="mb-3">
+              <label for="subject" class="form-label">主旨</label>
+              <input type="text" class="form-control" id="subject" required>
+              <div class="invalid-feedback">請輸入主旨。</div>
+            </div>
+            <div class="mb-3">
+              <label for="message" class="form-label">訊息</label>
+              <textarea class="form-control" id="message" rows="5" required></textarea>
+              <div class="invalid-feedback">請輸入訊息內容。</div>
+            </div>
+            <button type="submit" class="btn btn-success w-100">送出</button>
+          </form>
+          <div id="formSuccess" class="alert alert-success mt-3 d-none" role="alert">
+            訊息已成功送出，謝謝您的來信！
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 頁尾 Footer -->
+  <footer class="bg-success text-white text-center py-4">
+    <div class="container">
+      <div class="mb-2">
+        <a href="#" class="text-white me-3" aria-label="Facebook"><i class="bi bi-facebook fs-4"></i></a>
+        <a href="#" class="text-white me-3" aria-label="Instagram"><i class="bi bi-instagram fs-4"></i></a>
+        <a href="#" class="text-white" aria-label="Line"><i class="bi bi-line fs-4"></i></a>
+      </div>
+      <small>© <span id="currentYear"></span> 水果挑選指南. 保留一切權利。</small>
+    </div>
+  </footer>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Custom JS -->
+  <script src="script.js"></script>
+</body>
+</html>

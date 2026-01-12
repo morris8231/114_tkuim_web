@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>咖啡廳詳情 - 找到你的咖啡</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    /* Cafe Detail Page - Japanese Minimal Style */
+    .cafe-detail-container {
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 0 24px;
+    }
+
+    .cafe-header {
+      margin-bottom: 32px;
+    }
+
+    .cafe-header h1 {
+      font-size: 1.75rem;
+      font-weight: 500;
+      margin: 0 0 8px 0;
+      letter-spacing: 0.02em;
+    }
+
+    .cafe-meta {
+      display: flex;
+      gap: 24px;
+      color: #888;
+      font-size: 0.85rem;
+    }
+
+    /* Image Gallery */
+    .image-gallery {
+      margin-bottom: 32px;
+      position: relative;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .gallery-container {
+      display: flex;
+      transition: transform 0.4s ease;
+    }
+
+    .gallery-container img {
+      width: 100%;
+      height: 400px;
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+
+    .gallery-nav {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(255, 255, 255, 0.9);
+      color: #333;
+      border: none;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 16px;
+      transition: all 0.2s ease;
+    }
+
+    .gallery-nav:hover {
+      background: white;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .gallery-nav.prev {
+      left: 16px;
+    }
+
+    .gallery-nav.next {
+      right: 16px;
+    }
+
+    .gallery-dots {
+      position: absolute;
+      bottom: 16px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 8px;
+    }
+
+    .gallery-dot {
+      width: 8px;
+      height: 8px;
+      background: rgba(255, 255, 255, 0.5);
+      border-radius: 50%;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    .gallery-dot.active {
+      background: white;
+    }
+
+    /* Info Section */
+    .cafe-info {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+      margin-bottom: 40px;
+    }
+
+    .info-card {
+      background: var(--white);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 20px;
+    }
+
+    .info-card h3 {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #999;
+      margin: 0 0 12px 0;
+      font-weight: 500;
+    }
+
+    .info-card p {
+      margin: 0;
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+
+    .tag-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .tag-item {
+      background: var(--secondary-color);
+      border: 1px solid var(--border-color);
+      padding: 4px 12px;
+      border-radius: 4px;
+      font-size: 0.8rem;
+    }
+
+    /* Photo Wall */
+    .photo-wall-section {
+      margin-bottom: 40px;
+    }
+
+    .section-title {
+      font-size: 0.9rem;
+      font-weight: 500;
+      margin-bottom: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .photo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 12px;
+    }
+
+    .photo-item {
+      position: relative;
+      aspect-ratio: 1;
+      border-radius: 6px;
+      overflow: hidden;
+      cursor: pointer;
+    }
+
+    .photo-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.3s ease;
+    }
+
+    .photo-item:hover img {
+      transform: scale(1.05);
+    }
+
+    .photo-like {
+      position: absolute;
+      bottom: 8px;
+      right: 8px;
+      background: rgba(255, 255, 255, 0.9);
+      border: none;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .photo-like:hover {
+      background: white;
+      transform: scale(1.05);
+    }
+
+    .photo-like.liked {
+      background: #e74c3c;
+      color: white;
+    }
+
+    /* Reviews Section */
+    .reviews-section {
+      margin-bottom: 40px;
+    }
+
+    .review-card {
+      background: var(--white);
+      border: 1px solid var(--border-color);
+      padding: 20px;
+      border-radius: 6px;
+      margin-bottom: 12px;
+    }
+
+    .review-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .review-user {
+      font-weight: 500;
+      font-size: 0.9rem;
+    }
+
+    .review-date {
+      color: #999;
+      font-size: 0.8rem;
+    }
+
+    .star-rating {
+      color: #c9a78c;
+      font-size: 0.9rem;
+      margin-bottom: 8px;
+    }
+
+    .review-comment {
+      font-size: 0.9rem;
+      line-height: 1.6;
+      color: #555;
+    }
+
+    .review-images {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .review-images img {
+      width: 60px;
+      height: 60px;
+      object-fit: cover;
+      border-radius: 4px;
+    }
+
+    /* Review Form */
+    .review-form {
+      background: var(--white);
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      padding: 24px;
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 0.8rem;
+      color: #666;
+      margin-bottom: 8px;
+    }
+
+    .form-group select,
+    .form-group textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid var(--border-color);
+      border-radius: 6px;
+      font-size: 0.9rem;
+      font-family: inherit;
+      box-sizing: border-box;
+      transition: border-color 0.2s ease;
+    }
+
+    .form-group select:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+
+    .image-upload {
+      border: 2px dashed var(--border-color);
+      border-radius: 6px;
+      padding: 24px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.2s ease;
+    }
+
+    .image-upload:hover {
+      border-color: var(--accent);
+    }
+
+    .image-upload input {
+      display: none;
+    }
+
+    .image-preview {
+      display: flex;
+      gap: 8px;
+      margin-top: 12px;
+      flex-wrap: wrap;
+    }
+
+    .image-preview img {
+      width: 60px;
+      height: 60px;
+      object-fit: cover;
+      border-radius: 4px;
+    }
+
+    .btn-submit {
+      background: var(--primary-color);
+      color: white;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 6px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s ease;
+    }
+
+    .btn-submit:hover {
+      background: #4a3a32;
+    }
+
+    @media (max-width: 768px) {
+      .cafe-info {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <!-- Navbar will be injected by js/ui.js -->
+
+  <div class="cafe-detail-container">
+    <div id="cafeDetail">
+      <p style="text-align: center; color: #888;">資料載入中...</p>
+    </div>
+
+    <!-- Photo Wall Section -->
+    <div id="photoWallSection" class="photo-wall-section" style="display: none;">
+      <div class="section-title">
+        <span>📷 顧客照片</span>
+      </div>
+      <div id="photoGrid" class="photo-grid"></div>
+    </div>
+
+    <!-- Reviews Section -->
+    <div class="reviews-section">
+      <div class="section-title">💬 評論</div>
+      <div id="reviews">
+        <p style="color: #888;">載入評論中...</p>
+      </div>
+
+      <div style="margin-top: 24px;">
+        <div class="section-title">撰寫評論</div>
+        <form id="reviewForm" class="review-form">
+          <div class="form-group">
+            <label for="rating">評分</label>
+            <select id="rating" name="rating" required>
+              <option value="5">⭐⭐⭐⭐⭐ 非常滿意</option>
+              <option value="4">⭐⭐⭐⭐ 滿意</option>
+              <option value="3">⭐⭐⭐ 普通</option>
+              <option value="2">⭐⭐ 不滿意</option>
+              <option value="1">⭐ 非常不滿意</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label for="comment">留言</label>
+            <textarea id="comment" name="comment" rows="4" required placeholder="分享你的體驗..."></textarea>
+          </div>
+
+          <div class="form-group">
+            <label>上傳照片 (選填)</label>
+            <div class="image-upload" onclick="document.getElementById('reviewImages').click()">
+              <input type="file" id="reviewImages" multiple accept="image/*">
+              <p style="margin: 0; color: #888; font-size: 0.85rem;">點擊此處選擇照片</p>
+            </div>
+            <div id="imagePreview" class="image-preview"></div>
+          </div>
+
+          <button type="submit" class="btn-submit">送出評論</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/auth.js"></script>
+  <script src="js/ui.js"></script>
+  <script>
+    const urlParams = new URLSearchParams(window.location.search);
+    const cafeId = urlParams.get('id');
+
+    // Tag labels for display
+    const tagLabels = {
+      work_friendly: '💻 適合工作',
+      quiet: '🤫 安靜',
+      social: '🗣️ 適合聊天',
+      aesthetic: '📸 網美店',
+      specialty_coffee: '☕ 精品咖啡',
+      dessert: '🍰 甜點',
+      pet_friendly: '🐶 寵物友善',
+      late_night: '🌙 深夜'
+    };
+
+    async function loadCafeDetail() {
+      if (!cafeId) return;
+      try {
+        const token = localStorage.getItem('token');
+        const headers = token ? { 'Authorization': 'Bearer ' + token } : {};
+        const res = await fetch(`http://localhost:8080/api/cafes/${cafeId}`, { headers });
+
+        if (res.ok) {
+          const cafe = await res.json();
+          const detailDiv = document.getElementById('cafeDetail');
+
+          // Generate image gallery HTML
+          const defaultImage = 'https://images.unsplash.com/photo-1453614512568-c4024d13c247?w=800&h=600&fit=crop';
+          const images = (cafe.imageUrls && cafe.imageUrls.length > 0) ? cafe.imageUrls : [defaultImage];
+
+          // Store images for slideshow
+          window.cafeImages = images;
+          window.currentImageIdx = 0;
+
+          // Generate tags HTML
+          const tagsHtml = cafe.tags && cafe.tags.length > 0
+            ? cafe.tags.map(t => `<span class="tag-item">${tagLabels[t] || t}</span>`).join('')
+            : '<span style="color:#888;">尚無標籤</span>';
+
+          detailDiv.innerHTML = `
+            <div class="image-gallery">
+              <div class="gallery-container">
+                ${images.map((url, idx) => `
+                  <img src="${url}" alt="咖啡廳圖片 ${idx + 1}" onerror="this.src='${defaultImage}'">
+                `).join('')}
+              </div>
+              ${images.length > 1 ? `
+                <button class="gallery-nav prev" onclick="changeImage(-1)">❮</button>
+                <button class="gallery-nav next" onclick="changeImage(1)">❯</button>
+                <div class="gallery-dots">
+                  ${images.map((_, idx) => `<span class="gallery-dot ${idx === 0 ? 'active' : ''}" data-idx="${idx}" onclick="goToImage(${idx})"></span>`).join('')}
+                </div>
+              ` : ''}
+            </div>
+
+            <div class="cafe-header">
+              <h1>${cafe.name}</h1>
+              <div class="cafe-meta">
+                <span>📍 ${cafe.address || '暫無地址'}</span>
+              </div>
+            </div>
+
+            <div class="cafe-info">
+              <div class="info-card">
+                <h3>關於</h3>
+                <p>${cafe.description || '暫無描述'}</p>
+              </div>
+              <div class="info-card">
+                <h3>營業時間</h3>
+                <p>${cafe.openingHours || '請洽詢店家'}</p>
+              </div>
+              <div class="info-card">
+                <h3>標籤</h3>
+                <div class="tag-list">${tagsHtml}</div>
+              </div>
+              <div class="info-card">
+                <h3>聯絡資訊</h3>
+                <p>${cafe.phoneNumber || '暫無電話'}</p>
+                ${cafe.menuUrl ? `<a href="${cafe.menuUrl}" target="_blank" style="color: var(--accent);">查看菜單 →</a>` : ''}
+              </div>
+            </div>
+          `;
+
+          // Load photo wall
+          loadPhotoWall();
+        }
+      } catch (err) { console.error(err); }
+    }
+
+    // Image gallery navigation
+    function changeImage(direction) {
+      const images = window.cafeImages || [];
+      if (images.length <= 1) return;
+
+      window.currentImageIdx = (window.currentImageIdx + direction + images.length) % images.length;
+      updateGallery();
+    }
+
+    function goToImage(idx) {
+      window.currentImageIdx = idx;
+      updateGallery();
+    }
+
+    function updateGallery() {
+      const container = document.querySelector('.gallery-container');
+      if (container) {
+        container.style.transform = `translateX(-${window.currentImageIdx * 100}%)`;
+      }
+      document.querySelectorAll('.gallery-dot').forEach((dot, idx) => {
+        dot.classList.toggle('active', idx === window.currentImageIdx);
+      });
+    }
+
+    // Photo Wall (placeholder - will be connected to PhotoController API)
+    async function loadPhotoWall() {
+      try {
+        const res = await fetch(`http://localhost:8080/api/cafes/${cafeId}/photos`);
+        if (res.ok) {
+          const photos = await res.json();
+          if (photos.length > 0) {
+            document.getElementById('photoWallSection').style.display = 'block';
+            const grid = document.getElementById('photoGrid');
+            grid.innerHTML = photos.map(p => `
+              <div class="photo-item">
+                <img src="${p.url}" alt="顧客照片">
+                <button class="photo-like" data-id="${p.id}" onclick="toggleLike('${p.id}')">
+                  ❤️ ${p.votes || 0}
+                </button>
+              </div>
+            `).join('');
+          }
+        }
+      } catch (err) {
+        // Photo API not available yet, hide section
+        console.log('Photo API not available');
+      }
+    }
+
+    async function toggleLike(photoId) {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        alert('請先登入！');
+        return;
+      }
+      try {
+        const res = await fetch(`http://localhost:8080/api/cafes/${cafeId}/photos/${photoId}/vote`, {
+          method: 'POST',
+          headers: { 'Authorization': 'Bearer ' + token }
+        });
+        if (res.ok) {
+          loadPhotoWall(); // Reload
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    // Reviews
+    async function loadReviews() {
+      if (!cafeId) return;
+      try {
+        const res = await fetch(`http://localhost:8080/api/cafes/${cafeId}/reviews`);
+        const reviewsDiv = document.getElementById('reviews');
+
+        if (res.ok) {
+          const reviews = await res.json();
+          if (reviews.length === 0) {
+            reviewsDiv.innerHTML = '<p style="color:#888;">尚無評論，成為第一個評論的人吧！</p>';
+            return;
+          }
+
+          reviewsDiv.innerHTML = reviews.map(r => `
+            <div class="review-card">
+              <div class="review-header">
+                <span class="review-user">${r.userEmail || '匿名用戶'}</span>
+                <span class="review-date">${new Date(r.createdAt).toLocaleDateString()}</span>
+              </div>
+              <div class="star-rating">
+                ${'★'.repeat(r.rating)}${'☆'.repeat(5 - r.rating)}
+              </div>
+              <p class="review-comment">${r.comment}</p>
+              ${r.imageUrls && r.imageUrls.length > 0 ? `
+                <div class="review-images">
+                  ${r.imageUrls.map(url => `<img src="${url}" alt="評論照片">`).join('')}
+                </div>
+              ` : ''}
+            </div>
+          `).join('');
+        }
+      } catch (err) { console.error(err); }
+    }
+
+    // Image preview for review form
+    document.getElementById('reviewImages').addEventListener('change', function (e) {
+      const preview = document.getElementById('imagePreview');
+      preview.innerHTML = '';
+      Array.from(e.target.files).forEach(file => {
+        const reader = new FileReader();
+        reader.onload = function (e) {
+          const img = document.createElement('img');
+          img.src = e.target.result;
+          preview.appendChild(img);
+        };
+        reader.readAsDataURL(file);
+      });
+    });
+
+    // Review form submission
+    document.getElementById('reviewForm').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const token = localStorage.getItem('token');
+      if (!token) {
+        alert('請先登入後才能評論！');
+        window.location.href = 'login.html';
+        return;
+      }
+
+      const rating = parseInt(document.getElementById('rating').value);
+      const comment = document.getElementById('comment').value;
+
+      try {
+        const res = await fetch(`http://localhost:8080/api/cafes/${cafeId}/reviews`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + token
+          },
+          body: JSON.stringify({ rating, comment })
+        });
+
+        if (res.ok) {
+          alert('評論成功！');
+          document.getElementById('comment').value = '';
+          document.getElementById('imagePreview').innerHTML = '';
+          loadReviews();
+        } else {
+          alert('評論失敗: ' + res.statusText);
+        }
+      } catch (err) {
+        console.error(err);
+        alert('發生錯誤');
+      }
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+      loadCafeDetail();
+      loadReviews();
+    });
+  </script>
+</body>
+
+</html>

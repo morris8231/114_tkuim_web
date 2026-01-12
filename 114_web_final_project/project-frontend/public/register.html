@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register - Find Your Coffee</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+  <!-- Navbar will be injected by js/ui.js -->
+  <div class="container" style="max-width: 400px; margin-top: 100px;">
+    <form id="registerForm">
+      <h2 style="text-align: center; margin-bottom: 20px;">註冊會員</h2>
+      <label for="email">電子郵件</label>
+      <input type="email" id="email" name="email" required>
+
+      <label for="password">密碼 (最少 6 碼)</label>
+      <input type="password" id="password" name="password" minlength="6" required>
+
+      <button type="submit">註冊</button>
+    </form>
+    <p>已經有帳號了嗎？ <a href="login.html">按此登入</a></p>
+  </div>
+
+  <script src="js/auth.js"></script>
+  <script src="js/ui.js"></script>
+  <script>
+    const form = document.getElementById('registerForm');
+    form.addEventListener('submit', async function (e) {
+      e.preventDefault();
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+
+      try {
+        await register(email, password);
+        await login(email, password);
+        window.location.href = 'cafes.html';
+      } catch (err) {
+        alert(err.message);
+      }
+    });
+  </script>
+</body>
+
+</html>

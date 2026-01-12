@@ -1,0 +1,51 @@
+/* 全域變數與基本樣式 */
+:root {
+  --primary-color: #a1f0cb; /* Bootstrap success 綠色 */
+  --primary-hover: #157347;
+  --secondary-text: #6c757d;
+}
+
+body {
+  font-family: "Noto Sans TC", "微軟正黑體", Arial, sans-serif;
+  line-height: 1.6;
+}
+
+/* 按鈕微動畫 */
+.btn-raise {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.btn-raise:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+/* 卡片 hover 動效 */
+.hoverable {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.hoverable:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 0.75rem 1.5rem rgba(0, 0, 0, 0.15);
+}
+
+/* Hero section 自訂背景 */
+.hero-section {
+  background: linear-gradient(135deg, var(--primary-color) 0%, #4caf50 100%);
+  color: white;
+}
+
+.hero-section .btn {
+  box-shadow: none;
+}
+
+/* 行距與段落間距 */
+h2 {
+  font-weight: 700;
+}
+
+/* collapse 區域的內邊距 */
+.card .collapse {
+  padding-top: 0.5rem;
+}

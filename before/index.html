@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>水果挑選指南</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Bootstrap Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- 導航列 -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-success fixed-top shadow-sm">
+    <div class="container">
+      <a class="navbar-brand fw-bold" href="#home">水果挑選指南</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="切換導航">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarContent">
+        <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
+          <li class="nav-item"><a class="nav-link" href="#home">首頁</a></li>
+          <li class="nav-item"><a class="nav-link" href="#tips">選果技巧</a></li>
+          <li class="nav-item"><a class="nav-link" href="#fruits">水果清單</a></li>
+          <li class="nav-item"><a class="nav-link" href="#contact">聯絡我們</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section id="home" class="hero-section py-5 mt-5 bg-light">
+    <div class="container py-5">
+      <div class="row align-items-center g-4">
+        <div class="col-lg-6">
+          <h1 class="display-4 fw-bold text-success">挑選新鮮水果的祕訣</h1>
+          <p class="lead text-secondary">想要每一次都買到甜美多汁的水果嗎？透過我們的指南，了解如何利用外觀、氣味與觸感判斷水果的新鮮度。</p>
+          <div class="d-flex gap-2 flex-wrap">
+            <a href="#fruits" class="btn btn-success btn-raise"><i class="bi bi-basket2-fill me-1"></i>瀏覽水果清單</a>
+            <a href="#tips" class="btn btn-outline-success btn-raise"><i class="bi bi-lightbulb me-1"></i>選果技巧</a>
+          </div>
+        </div>
+        <div class="col-lg-6 text-center">
+          <img class="img-fluid rounded-4 shadow" src="https://via.placeholder.com/640x420?text=Fresh+Fruit" alt="新鮮水果圖片">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 選果技巧 Section -->
+  <section id="tips" class="py-5">
+    <div class="container">
+      <h2 class="text-center mb-5 fw-bold">選果基本技巧</h2>
+      <div class="row justify-content-center">
+        <div class="col-lg-10">
+          <div class="alert alert-info" role="alert">
+            以下要點整理自農業與食品專家的建議，協助你快速掌握選購新鮮水果的原則。
+          </div>
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item"><strong>避免明顯損傷：</strong>不要挑選有瘀傷或破損的水果，這些部位容易藏有細菌，營養價值也會降低。</li>
+            <li class="list-group-item"><strong>輕壓感受熟度：</strong>多數水果在成熟時會略微柔軟，輕壓表面應有微微彈性，只有蘋果應保持偏硬。</li>
+            <li class="list-group-item"><strong>聞香辨甜度：</strong>成熟的水果會散發甜香，香味愈濃郁代表愈成熟。</li>
+            <li class="list-group-item"><strong>選擇顏色鮮豔：</strong>鮮豔且均勻的顏色通常代表成熟且含有豐富植化素。</li>
+            <li class="list-group-item"><strong>選擇當季水果：</strong>當季水果價格較低且風味最佳。</li>
+            <li class="list-group-item"><strong>購買散裝：</strong>散裝水果通常品質較佳且可以自由挑選，避免預先包裝的較差品。</li>
+            <li class="list-group-item"><strong>用前清洗：</strong>食用前請以清水沖洗水果，減少農藥殘留與微生物污染。</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 水果卡片 Section -->
+  <section id="fruits" class="py-5 bg-light">
+    <div class="container">
+      <h2 class="text-center mb-4 fw-bold">水果挑選卡片</h2>
+      <!-- 篩選與搜尋工具 -->
+      <div class="row mb-4 g-3">
+        <div class="col-md-6">
+          <label for="categoryFilter" class="form-label">依類別篩選：</label>
+          <select id="categoryFilter" class="form-select">
+            <option value="all" selected>全部</option>
+            <option value="pome">仁果類</option>
+            <option value="tropical">熱帶水果</option>
+            <option value="berry">莓果類</option>
+            <option value="citrus">柑橘類</option>
+            <option value="melon">瓜類</option>
+          </select>
+        </div>
+        <div class="col-md-6">
+          <label for="searchInput" class="form-label">搜尋水果：</label>
+          <input type="text" id="searchInput" class="form-control" placeholder="輸入水果名稱">
+        </div>
+      </div>
+      <!-- 卡片列 -->
+      <div id="fruitCards" class="row g-4">
+        <!-- Apple card -->
+        <div class="col-lg-4 col-md-6 fruit-item" data-category="pome">
+          <div class="card h-100 shadow-sm hoverable">
+            <img src="https://via.placeholder.com/800x600?text=Apple" class="card-img-top" alt="蘋果圖片">
+            <div class="card-body d-flex flex-column">
+              <h5 class="card-title">蘋果</h5>
+              <p class="card-text flex-grow-1">選擇表皮光亮、顏色均勻且重量較重的蘋果，應手感扎實無軟點。避開有瘀傷、切痕或孔洞的果實。</p>
+              <button class="btn btn-success mt-2 toggle-detail" data-target="appleDetail">更多資訊</button>
+              <div id="appleDetail" class="collapse mt-2">
+                <ul>
+                  <li>儲存：常溫可放置一週內食用；若想保存更久，請放置冰箱，並遠離氣味強烈的食物。</li>
+                  <li>避免損傷：受傷的蘋果容易腐敗，優先食用或切除損傷部分再用。</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Banana card -->
+        <div class="col-lg-4 col-md-6 fruit-item" data-category="tropical">
+          <div class="card h-100 shadow-sm hoverable">
+            <img src="https://via.placeholder.com/800x600?text=Banana" class="card-img-top" alt="香蕉圖片">
+            <div class="card-body d-flex flex-column">
+              <h5 class="card-title">香蕉</h5>
+              <p class="card-text flex-grow-1">挑選均勻黃色的香蕉，表面出現少量褐色斑點時風味最佳。購買未熟青香蕉可在室溫放幾日成熟；完全褐色則表示過熟。</p>
+              <button class="btn btn-success mt-2 toggle-detail" data-target="bananaDetail">更多資訊</button>
+              <div id="bananaDetail" class="collapse mt-2">
+                <ul>
+                  <li>避免壓傷：不要購買有明顯壓傷的香蕉。</li>
+                  <li>保存：常溫、陰涼乾燥處保存，成熟後請儘快食用。</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Berries card -->
+        <div class="col-lg-4 col-md-6 fruit-item" data-category="berry">
+          <div class="card h-100 shadow-sm hoverable">
+            <img src="https://via.placeholder.com/800x600?text=Berries" class="card-img-top" alt="莓果圖片">
+            <div class="card-body d-flex flex-column">
+              <h5 class="card-title">莓果</h5>
+              <p class="card-text flex-grow-1">新鮮莓果應顏色鮮亮且果粒飽滿，表面乾燥不黏。不要購買底部有被壓碎或出現霉斑的包裝。</p>
+              <button class="btn btn-success mt-2 toggle-detail" data-target="berryDetail">更多資訊</button>
+              <div id="berryDetail" class="collapse mt-2">
+                <ul>
+                  <li>保存：需冷藏，並保持通風乾燥，可保存 1～3 天。</li>
+                  <li>檢查霉點：購買前打開盒底查看是否有被壓爛或發霉的果粒。</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Citrus card -->
+        <div class="col-lg-4 col-md-6 fruit-item" data-category="citrus">
+          <div class="card h-100 shadow-sm hoverable">
+            <img src="https://via.placeholder.com/800x600?text=Citrus" class="card-img-top" alt="柑橘類圖片">
+            <div class="card-body d-flex flex-column">
+              <h5 class="card-title">柑橘類</h5>
+              <p class="card-text flex-grow-1">選擇有香氣、表皮光滑且重量較重的橙子、檸檬等。避免表皮皺縮或乾癟的果實。</p>
+              <button class="btn btn-success mt-2 toggle-detail" data-target="citrusDetail">更多資訊</button>
+              <div id="citrusDetail" class="collapse mt-2">
+                <ul>
+                  <li>保存：大多可放置室溫保存數日。</li>
+                  <li>注意外觀：表面有軟斑或變色可能已過熟。</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Melon card -->
+        <div class="col-lg-4 col-md-6 fruit-item" data-category="melon">
+          <div class="card h-100 shadow-sm hoverable">
+            <img src="https://via.placeholder.com/800x600?text=Melon" class="card-img-top" alt="瓜類圖片">
+            <div class="card-body d-flex flex-column">
+              <h5 class="card-title">瓜類</h5>
+              <p class="card-text flex-grow-1">選擇形狀對稱、芬芳且沉重的瓜類。西瓜與哈密瓜外皮應呈現不反光的霧面，敲擊時應有空洞音；哈密瓜成熟後外皮由綠變黃。避開有軟斑或裂痕的瓜。</p>
+              <button class="btn btn-success mt-2 toggle-detail" data-target="melonDetail">更多資訊</button>
+              <div id="melonDetail" class="collapse mt-2">
+                <ul>
+                  <li>保存：完整瓜可放室溫，切開後需密封冷藏。</li>
+                  <li>成熟判斷：聞瓜蒂附近有甜香，敲打聽音色。</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- Pear card -->
+        <div class="col-lg-4 col-md-6 fruit-item" data-category="pome">
+          <div class="card h-100 shadow-sm hoverable">
+            <img src="https://via.placeholder.com/800x600?text=Pear" class="card-img-top" alt="梨子圖片">
+            <div class="card-body d-flex flex-column">
+              <h5 class="card-title">梨子</h5>
+              <p class="card-text flex-grow-1">梨子多在未成熟時採收，挑選表面光滑無瘀傷的果實。成熟的梨子靠近果梗處輕按會微微凹陷，帶有淡淡果香。</p>
+              <button class="btn btn-success mt-2 toggle-detail" data-target="pearDetail">更多資訊</button>
+              <div id="pearDetail" class="collapse mt-2">
+                <ul>
+                  <li>保存：放室溫催熟後，再移至冰箱冷藏，可保存 1～3 天。</li>
+                  <li>避免損傷：有傷的梨子優先食用或加工。</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 聯絡表單 Section -->
+  <section id="contact" class="py-5">
+    <div class="container">
+      <h2 class="text-center mb-4 fw-bold">聯絡我們</h2>
+      <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+          <form id="contactForm" novalidate>
+            <div class="mb-3">
+              <label for="name" class="form-label">姓名</label>
+              <input type="text" class="form-control" id="name" required>
+              <div class="invalid-feedback">請輸入姓名。</div>
+            </div>
+            <div class="mb-3">
+              <label for="email" class="form-label">電子郵件</label>
+              <input type="email" class="form-control" id="email" required>
+              <div class="invalid-feedback">請輸入有效的電子郵件地址。</div>
+            </div>
+            <div class="mb-3">
+              <label for="subject" class="form-label">主旨</label>
+              <input type="text" class="form-control" id="subject" required>
+              <div class="invalid-feedback">請輸入主旨。</div>
+            </div>
+            <div class="mb-3">
+              <label for="message" class="form-label">訊息</label>
+              <textarea class="form-control" id="message" rows="5" required></textarea>
+              <div class="invalid-feedback">請輸入訊息內容。</div>
+            </div>
+            <button type="submit" class="btn btn-success w-100">送出</button>
+          </form>
+          <div id="formSuccess" class="alert alert-success mt-3 d-none" role="alert">
+            訊息已成功送出，謝謝您的來信！
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 頁尾 Footer -->
+  <footer class="bg-success text-white text-center py-4">
+    <div class="container">
+      <div class="mb-2">
+        <a href="#" class="text-white me-3" aria-label="Facebook"><i class="bi bi-facebook fs-4"></i></a>
+        <a href="#" class="text-white me-3" aria-label="Instagram"><i class="bi bi-instagram fs-4"></i></a>
+        <a href="#" class="text-white" aria-label="Line"><i class="bi bi-line fs-4"></i></a>
+      </div>
+      <small>© <span id="currentYear"></span> 水果挑選指南. 保留一切權利。</small>
+    </div>
+  </footer>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Custom JS -->
+  <script src="script.js"></script>
+</body>
+</html>

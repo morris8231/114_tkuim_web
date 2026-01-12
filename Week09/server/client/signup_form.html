@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>報名表單</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      max-width: 640px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+    .error {
+      color: #d63031;
+      font-size: 0.875rem;
+      margin-top: 0.25rem;
+    }
+    .loading {
+      opacity: 0.6;
+      pointer-events: none;
+    }
+  </style>
+</head>
+<body>
+  <h1>報名表單</h1>
+  <form id="signupForm" novalidate>
+    <div>
+      <label for="name">姓名</label><br>
+      <input type="text" id="name" name="name" required>
+      <div class="error" id="nameError"></div>
+    </div>
+    <div>
+      <label for="email">電子郵件</label><br>
+      <input type="email" id="email" name="email" required>
+      <div class="error" id="emailError"></div>
+    </div>
+    <div>
+      <label for="password">密碼</label><br>
+      <input type="password" id="password" name="password" minlength="6" required>
+      <div class="error" id="passwordError"></div>
+    </div>
+    <button type="submit" id="submitBtn">送出</button>
+  </form>
+  <button id="viewListBtn">查看報名清單</button>
+  <pre id="signupList" style="background:#f5f5f5;padding:1rem; margin-top:1rem; white-space:pre-wrap;"></pre>
+
+  <script src="signup_form.js"></script>
+</body>
+</html>
