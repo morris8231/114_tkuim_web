@@ -384,7 +384,7 @@ ISC License
 
 ## 👨‍💻 作者
 
-**Antigravity Team**
+**Morris Lee ＆ Antigravity Team**
 
 ---
 
