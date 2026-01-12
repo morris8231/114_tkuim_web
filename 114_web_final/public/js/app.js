@@ -1024,7 +1024,15 @@ const app = {
                 // Determine image source
                 const imgSrc = sub.photos && sub.photos.length > 0 ? sub.photos[0] : '';
                 const dateStr = new Date(sub.createdAt).toLocaleString(); // Use toLocaleString for full date/time
-                const isOwnSubmission = app.state.user && sub.userId && (app.state.user._id === sub.userId || app.state.user._id === sub.userId._id);
+
+                // Fix ownership detection - handle both populated and unpopulated userId
+                let isOwnSubmission = false;
+                if (app.state.user && sub.userId) {
+                    const currentUserId = app.state.user._id || app.state.user.id;
+                    const submissionUserId = typeof sub.userId === 'object' ? sub.userId._id : sub.userId;
+                    isOwnSubmission = currentUserId === submissionUserId;
+                }
+
                 const showAuthor = !isMyGallery;
                 const authorName = sub.userId?.nickname || '匿名用戶';
                 const isPublic = sub.isPublic;
