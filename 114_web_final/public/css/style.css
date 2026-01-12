@@ -287,19 +287,28 @@ body {
 
 /* Gallery */
 .masonry-layout {
-    columns: 3 300px;
-    column-gap: 30px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 30px;
+    align-items: start;
+    /* Prevent items stretching to row height if desired, or 'stretch' for equal height */
 }
 
 .gallery-item {
-    break-inside: avoid;
-    margin-bottom: 30px;
+    /* break-inside: avoid; Removed for Grid */
+    margin-bottom: 0;
+    /* Margin handled by grid gap */
     background: white;
     border: 1px solid #eee;
     border-radius: var(--border-radius);
     overflow: hidden;
     transition: transform 0.2s;
+    height: 100%;
+    /* Ensure card fills grid cell if aligned stretch */
+    display: flex;
+    flex-direction: column;
 }
+
 
 .gallery-item:hover {
     transform: translateY(-5px);

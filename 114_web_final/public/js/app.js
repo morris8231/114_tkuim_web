@@ -4,11 +4,9 @@ const app = {
         currentChapter: null,
         currentTask: null,
         token: localStorage.getItem('token'),
-        currentChapter: null,
-        currentTask: null,
-        token: localStorage.getItem('token'),
         chapters: [], // Store loaded chapters
-        user: null
+        user: null,
+        galleryTab: 'my' // Default to My Gallery
     },
 
     init: async () => {
@@ -753,7 +751,6 @@ const app = {
 
         // Render Controls (if not already there or needs update based on tab)
         if (!controlsContainer) {
-            // Create controls container if missing (should be in HTML, but safe to add)
             const controls = document.createElement('div');
             controls.id = 'gallery-controls';
             controls.style.marginBottom = '20px';
@@ -767,6 +764,7 @@ const app = {
         const controls = document.getElementById('gallery-controls');
         const isMyGallery = app.state.galleryTab === 'my';
 
+        // Refresh controls HTML every time to reset state
         controls.innerHTML = `
             ${isMyGallery ? `<button onclick="app.openUploadModal()" style="background: #2ecc71; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">➕ 上傳作品 (Upload)</button>` : ''}
             <div style="display: flex; gap: 5px; align-items: center; margin-left: auto;">
@@ -777,10 +775,16 @@ const app = {
             </div>
         `;
 
-        // If not a re-filter, show loading
-        // arguments[0] is 'isRefilter' boolean
-        const isRefilter = arguments[0] === true;
-        if (!isRefilter) container.innerHTML = '<div class="loading-spinner">載入作品中...</div>';
+        // FORCE RESET INPUTS (Debugging)
+        setTimeout(() => {
+            const s = document.getElementById('gallery-date-start');
+            const e = document.getElementById('gallery-date-end');
+            if (s) s.value = '';
+            if (e) e.value = '';
+        }, 50);
+
+        // Always show loading to prove JS is running
+        container.innerHTML = '<div class="loading-spinner">載入中 Please Wait...</div>';
 
         try {
             const endpoint = isMyGallery
@@ -794,29 +798,11 @@ const app = {
             const res = await fetch(endpoint, { headers });
             let submissions = await res.json();
 
-            // --- Date Filtering Logic ---
-            const startDateStr = document.getElementById('gallery-date-start').value;
-            const endDateStr = document.getElementById('gallery-date-end').value;
-
-            if (startDateStr || endDateStr) {
-                // Parse as Local Time by appending T00:00:00 to date string
-                const start = startDateStr ? new Date(startDateStr + 'T00:00:00') : new Date(0); // 1970
-                const end = endDateStr ? new Date(endDateStr + 'T23:59:59.999') : new Date(); // Now
-
-                // If no end date specified, use NOW. If end date specified, use end of that day.
-                if (!endDateStr) {
-                    end.setHours(23, 59, 59, 999);
-                }
-
-                submissions = submissions.filter(sub => {
-                    const subDate = new Date(sub.createdAt);
-                    return subDate >= start && subDate <= end;
-                });
-            }
-            // ---------------------------
+            // Skip Date Filtering for now to guarantee display
+            // ...
 
             if (!submissions || submissions.length === 0) {
-                container.innerHTML = '<p style="text-align:center; color:#666;">沒有符合條件的作品。</p>';
+                container.innerHTML = '<div class="empty-state" style="text-align:center; padding: 40px;">📭 目前沒有作品 (No Data Loaded)</div>';
                 return;
             }
 
@@ -926,6 +912,14 @@ const app = {
         }
     },
 
+    openLightbox: (imgSrc) => {
+        if (!imgSrc) return;
+        const modal = document.getElementById('lightbox-modal');
+        const img = document.getElementById('lightbox-img');
+        img.src = imgSrc;
+        modal.classList.remove('hidden');
+    },
+
     openEditModal: (submissionId, currentReflection, isPublic, subject) => {
         const modal = document.getElementById('edit-modal');
         document.getElementById('edit-submission-id').value = submissionId;
@@ -977,6 +971,7 @@ const app = {
     },
 
     deleteSubmission: async (submissionId) => {
+        console.log("Delete requested for:", submissionId);
         if (!confirm("確定要刪除這個作品嗎？此操作無法復原。")) {
             return;
         }
@@ -985,6 +980,8 @@ const app = {
             alert("請先登入");
             return;
         }
+
+        app.showMessage("正在刪除...");
 
         try {
             const res = await fetch(`/api/submissions/${submissionId}`, {
@@ -999,12 +996,15 @@ const app = {
                 if (item) {
                     item.remove();
                 }
+                // Refresh gallery to be sure
+                // app.loadGallery(true); 
             } else {
                 const err = await res.json();
+                console.error("Delete failed response:", err);
                 app.showMessage("刪除失敗：" + (err.error || "未知錯誤"));
             }
         } catch (error) {
-            console.error("Delete error:", error);
+            console.error("Delete network error:", error);
             app.showMessage("刪除失敗：網絡錯誤");
         }
     },
