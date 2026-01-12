@@ -11,10 +11,48 @@ const app = {
         user: null
     },
 
-    init: () => {
-        app.bindEvents();
-        app.checkAuth();
-        app.loadChapters();
+    init: async () => {
+        // Check for token
+        const token = localStorage.getItem('token');
+        if (token) {
+            app.state.token = token;
+            // Verify token/Fetch User Profile to ensure persistence
+            try {
+                const res = await fetch('/api/user/profile', {
+                    headers: { 'x-auth-token': token }
+                });
+                if (res.ok) {
+                    const user = await res.json();
+                    app.state.user = user;
+                    app.updateAuthUI();
+                } else {
+                    // Token invalid/expired
+                    console.warn("Token expired or invalid");
+                    localStorage.removeItem('token');
+                    app.state.token = null;
+                }
+            } catch (err) {
+                console.error("Auth check failed", err);
+            }
+        }
+
+        // Initialize Router/Views
+        app.setupNavigation();
+
+        // Initialize Message Modal Button
+        const msgOkBtn = document.getElementById('msg-modal-ok-btn');
+        if (msgOkBtn) {
+            msgOkBtn.onclick = () => document.getElementById('message-modal').classList.add('hidden');
+        }
+
+        app.render(); // Determine which view to show
+    },
+
+    showMessage: (text, title = '提示') => {
+        const modal = document.getElementById('message-modal');
+        document.getElementById('msg-modal-title').textContent = title;
+        document.getElementById('msg-modal-text').textContent = text;
+        modal.classList.remove('hidden');
     },
 
     checkAuth: async () => {
@@ -253,6 +291,24 @@ const app = {
         const modal = document.getElementById('message-modal');
         modal.classList.remove('hidden');
         modal.style.display = 'flex'; // Ensure flex layout for centering
+    },
+
+    setupNavigation: () => {
+        app.bindEvents(); // Use existing bindEvents logic
+    },
+
+    render: () => {
+        const view = app.state.currentView;
+        app.showView(view);
+
+        // Initial Data Load based on View
+        if (view === 'chapters-view') {
+            app.loadChapters();
+        } else if (view === 'gallery-view') {
+            app.loadGallery();
+        } else if (view === 'review-view') {
+            app.loadReview();
+        }
     },
 
     showView: (viewId) => {
@@ -537,29 +593,36 @@ const app = {
         }
 
         // --- UX Enhancement: Beginner Tips Toggle ---
-        // Basic Tips Mapping (could be in DB, hardcoded for MVP)
-        const tipsMap = {
-            'focus': '💡 提示：對焦就像是告訴相機「主角是誰」。主體清楚，背景模糊，照片會更有質感。',
-            'exposure': '💡 提示：曝光就是照片的亮度。太亮叫過曝（白成一片），太暗叫曝光不足（黑成一片）。',
-            'shutter': '💡 提示：快門越快，越能凍結動作（適合運動）；快門越慢，越能拍出流動感（適合車軌、瀑布）。',
-            'composition': '💡 提示：試著不要把主角永遠放在正中間。放在畫面的 1/3 處通常更自然。'
-        };
-        // Simple keyword match
-        let tipContent = "💡 攝影小撇步：多拍幾張，總有一張是好的！";
-        if (task.tags) {
-            if (task.tags.some(t => t.includes('focus'))) tipContent = tipsMap['focus'];
-            else if (task.tags.some(t => t.includes('exposure'))) tipContent = tipsMap['exposure'];
-            else if (task.tags.some(t => t.includes('composition'))) tipContent = tipsMap['composition'];
-        }
+        // 1. Remove existing tips if any to prevent duplication
+        const existingTips = document.querySelector('.beginner-tips-wrapper');
+        if (existingTips) existingTips.remove();
+
+        // Pool of 10 Beginner Tips
+        const beginnerTipsPool = [
+            "多拍幾張沒關係，刪照片也是學習的一部分。拍得多，才知道哪一張真的好。",
+            "照片模糊，通常不是相機爛，是快門太慢。先顧清楚，再顧好看。",
+            "拍照前，先看背景一眼。雜亂的背景，會吃掉主角的存在感。",
+            "靠近一點，再拍。新手最常犯的錯，就是拍得太遠。",
+            "光線比相機重要。找到好光，比換鏡頭更有用。",
+            "拍不出來時，先換角度，不要急著換設定。蹲低、側拍、靠近窗邊，常常就有差。",
+            "照片不好看，不代表你不會拍，只是還在累積。每個攝影師都有一堆沒發表的照片。",
+            "不要急著後製救照片，先把拍攝拍好。好照片，後製只是加分。",
+            "看不懂的照片，多看兩眼。你會慢慢學到「為什麼這樣拍好看」。",
+            "拍你有感覺的東西，比拍熱門題材更重要。攝影不是比快，而是比久。"
+        ];
+
+        // Randomly select 1 unique tip
+        const randomTip = beginnerTipsPool[Math.floor(Math.random() * beginnerTipsPool.length)];
 
         const tipsContainer = document.createElement('div');
+        tipsContainer.className = 'beginner-tips-wrapper'; // Add class for selection
         tipsContainer.innerHTML = `
             <div class="beginner-tips-toggle" onclick="app.toggleBeginnerTips(this)">
                 <span>🔰 新手小提示 (Beginner Tips)</span>
                 <span>▼</span>
             </div>
             <div class="beginner-tips-content hidden">
-                ${tipContent}
+                 💡 ${randomTip}
             </div>
         `;
         // Insert before Concept Card
@@ -587,6 +650,10 @@ const app = {
         const form = e.target;
         const formData = new FormData(form);
 
+        // Explicitly handle isPublic checkbox
+        const isPublicChecked = form.querySelector('input[name="isPublic"]').checked;
+        formData.set('isPublic', isPublicChecked);
+
         // Add dummy ratings if not present in form (just in case)
         if (!formData.has('sharpness')) formData.append('sharpness', 5);
         if (!formData.has('exposure')) formData.append('exposure', 5);
@@ -600,34 +667,68 @@ const app = {
                 body: formData
             });
 
-            if (res.status === 401) {
-                alert("請先登入");
-                app.showView('auth-view');
-                return;
-            }
-
             if (res.ok) {
-                const data = await res.json(); // Get response with XP
-                let msg = "提交成功！";
-                if (data.xpEarned) {
-                    msg += `\n✨ 獲得 ${data.xpEarned} XP!`;
-                }
-                if (data.currentLevel) {
-                    // Check local state or just show current level
-                    msg += `\n當前等級: LV.${data.currentLevel}`;
-                }
-                alert(msg);
-                form.reset();
-                app.updateUserStats(); // Update header
-                app.showView('gallery-view');
-                app.loadGallery();
+                const data = await res.json();
+                app.showMessage(`任務完成！\n獲得經驗值: ${data.xpEarned} XP`);
+                app.showView('tasks-view'); // Back to list
+                // Refresh level if changed (optional)
             } else {
                 const err = await res.json();
-                alert("提交失敗：" + (err.error || "未知錯誤"));
+                app.showMessage("提交失敗: " + (err.error || "未知錯誤"));
             }
         } catch (error) {
             console.error("Submission error:", error);
-            alert("提交失敗：網絡錯誤");
+            app.showMessage("提交失敗：網絡錯誤");
+        }
+    },
+
+    updateAuthUI: () => {
+        const isLoggedIn = !!app.state.token;
+        const nav = document.getElementById('main-nav');
+        const loginBtn = document.getElementById('login-btn');
+        const logoutBtn = document.getElementById('logout-btn');
+        const statsHeader = document.getElementById('user-stats-header');
+
+        if (isLoggedIn) {
+            loginBtn.classList.add('hidden');
+            logoutBtn.classList.remove('hidden');
+            statsHeader.classList.remove('hidden');
+
+            if (app.state.user) {
+                // Update specific stats elements
+                // Example: LV.1 Badge
+                const levelBadge = statsHeader.querySelector('.level-badge');
+                if (levelBadge) {
+                    levelBadge.textContent = `LV.${app.state.user.level || 1}`;
+                }
+
+                // --- Nickname Display ---
+                let nickSpan = document.getElementById('header-nickname');
+                if (!nickSpan) {
+                    nickSpan = document.createElement('span');
+                    nickSpan.id = 'header-nickname';
+                    nickSpan.style.color = '#333';
+                    nickSpan.style.fontWeight = '500';
+                    nickSpan.style.fontSize = '0.9rem';
+                    nickSpan.style.marginRight = '8px';
+                    // Insert before the level badge (or inside stats container)
+                    statsHeader.prepend(nickSpan);
+                }
+                nickSpan.textContent = app.state.user.nickname || app.state.user.email.split('@')[0];
+                // ------------------------
+
+                // XP Bar
+                const xpBar = statsHeader.querySelector('.xp-bar');
+                if (xpBar) {
+                    // Simple calculation: assumes 100 XP per level for simplicity or use logic
+                    // If we don't have maxXP from backend, just show generic
+                    xpBar.style.width = '100%'; // Placeholder or calculated
+                }
+            }
+        } else {
+            loginBtn.classList.remove('hidden');
+            logoutBtn.classList.add('hidden');
+            statsHeader.classList.add('hidden');
         }
     },
 
@@ -648,47 +749,112 @@ const app = {
 
     loadGallery: async () => {
         const container = document.getElementById('gallery-container');
-        container.innerHTML = '<div class="loading-spinner">載入作品中...</div>';
+        const controlsContainer = document.getElementById('gallery-controls');
+
+        // Render Controls (if not already there or needs update based on tab)
+        if (!controlsContainer) {
+            // Create controls container if missing (should be in HTML, but safe to add)
+            const controls = document.createElement('div');
+            controls.id = 'gallery-controls';
+            controls.style.marginBottom = '20px';
+            controls.style.display = 'flex';
+            controls.style.gap = '10px';
+            controls.style.alignItems = 'center';
+            controls.style.flexWrap = 'wrap';
+            container.parentNode.insertBefore(controls, container);
+        }
+
+        const controls = document.getElementById('gallery-controls');
+        const isMyGallery = app.state.galleryTab === 'my';
+
+        controls.innerHTML = `
+            ${isMyGallery ? `<button onclick="app.openUploadModal()" style="background: #2ecc71; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">➕ 上傳作品 (Upload)</button>` : ''}
+            <div style="display: flex; gap: 5px; align-items: center; margin-left: auto;">
+                <label>📅 日期查詢:</label>
+                <input type="date" id="gallery-date-start" onchange="app.loadGallery(true)">
+                <span>至</span>
+                <input type="date" id="gallery-date-end" onchange="app.loadGallery(true)">
+            </div>
+        `;
+
+        // If not a re-filter, show loading
+        // arguments[0] is 'isRefilter' boolean
+        const isRefilter = arguments[0] === true;
+        if (!isRefilter) container.innerHTML = '<div class="loading-spinner">載入作品中...</div>';
 
         try {
-            const endpoint = app.state.galleryTab === 'my'
+            const endpoint = isMyGallery
                 ? '/api/submissions/my'
                 : '/api/submissions/public';
 
-            const headers = app.state.galleryTab === 'my'
+            const headers = isMyGallery
                 ? { 'x-auth-token': app.state.token }
                 : {};
 
             const res = await fetch(endpoint, { headers });
-            const submissions = await res.json();
+            let submissions = await res.json();
+
+            // --- Date Filtering Logic ---
+            const startDateStr = document.getElementById('gallery-date-start').value;
+            const endDateStr = document.getElementById('gallery-date-end').value;
+
+            if (startDateStr || endDateStr) {
+                // Parse as Local Time by appending T00:00:00 to date string
+                const start = startDateStr ? new Date(startDateStr + 'T00:00:00') : new Date(0); // 1970
+                const end = endDateStr ? new Date(endDateStr + 'T23:59:59.999') : new Date(); // Now
+
+                // If no end date specified, use NOW. If end date specified, use end of that day.
+                if (!endDateStr) {
+                    end.setHours(23, 59, 59, 999);
+                }
+
+                submissions = submissions.filter(sub => {
+                    const subDate = new Date(sub.createdAt);
+                    return subDate >= start && subDate <= end;
+                });
+            }
+            // ---------------------------
 
             if (!submissions || submissions.length === 0) {
-                container.innerHTML = '<p>尚無作品，快去完成任務吧！</p>';
+                container.innerHTML = '<p style="text-align:center; color:#666;">沒有符合條件的作品。</p>';
                 return;
             }
+
+            // Descending sort by date
+            submissions.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
             container.innerHTML = submissions.map(sub => {
                 // Determine image source
                 const imgSrc = sub.photos && sub.photos.length > 0 ? sub.photos[0] : '';
-                const dateStr = new Date(sub.createdAt).toLocaleDateString();
-                const isOwnSubmission = app.state.user && app.state.user._id === sub.userId._id;
-                const showAuthor = app.state.galleryTab === 'public';
+                const dateStr = new Date(sub.createdAt).toLocaleString(); // Use toLocaleString for full date/time
+                const isOwnSubmission = app.state.user && sub.userId && (app.state.user._id === sub.userId || app.state.user._id === sub.userId._id);
+                const showAuthor = !isMyGallery;
                 const authorName = sub.userId?.nickname || '匿名用戶';
+                const isPublic = sub.isPublic;
+
+                // Escape reflection for safer HTML
+                const safeReflection = (sub.reflection || '').replace(/"/g, '&quot;');
 
                 return `
-                <div class="gallery-item" id="submission-${sub._id}">
-                    <div style="height: 200px; background: #eee; overflow: hidden; display: flex; align-items: center; justify-content: center;">
-                        ${imgSrc ? `<img src="${imgSrc}" style="width: 100%; height: 100%; object-fit: cover;" alt="作品">` : '無圖片'}
+                <div class="gallery-item" id="submission-${sub._id}" style="position: relative;">
+                    ${isMyGallery ? `<div style="position: absolute; top: 10px; right: 10px; background: rgba(0,0,0,0.6); color: white; padding: 2px 8px; border-radius: 10px; font-size: 0.8em;">${isPublic ? '🌐 公開' : '🔒 私人'}</div>` : ''}
+                    <div style="height: 200px; background: #eee; overflow: hidden; display: flex; align-items: center; justify-content: center; cursor: pointer;" onclick="app.openLightbox('${imgSrc}')">
+                        ${imgSrc ? `<img src="${imgSrc}" style="width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'" alt="作品">` : '無圖片'}
                     </div>
                     <div class="gallery-info">
-                        ${showAuthor ? `<p><strong>👤 作者:</strong> ${authorName}</p>` : ''}
-                        <p><strong>提交時間:</strong> ${dateStr}</p>
-                        <p><span id="reflection-${sub._id}">${sub.reflection ? `心得: ${sub.reflection}` : ''}</span></p>
-                        <div class="gallery-actions">
-                            <button class="like-btn" onclick="app.toggleLike('${sub._id}', this)">❤️ <span class="like-count">${sub.likes || 0}</span></button>
-                            ${isOwnSubmission || app.state.galleryTab === 'my' ? `
-                                <button class="btn-sm" onclick="app.openEditModal('${sub._id}', '${sub.reflection || ''}')">✏️</button>
-                                <button class="btn-sm" style="color:red;" onclick="app.deleteSubmission('${sub._id}')">🗑️</button>
+                        ${showAuthor ? `<p><strong>👤 ${authorName}</strong></p>` : ''}
+                        <p style="color: #888; font-size: 0.9em;">📅 ${dateStr}</p>
+                        <p style="margin: 5px 0; color: #444;">${sub.subject ? `<span class="tag">${sub.subject}</span> ` : ''}<span id="reflection-${sub._id}">${sub.reflection || ''}</span></p>
+                        
+                        <div class="gallery-actions" style="margin-top: 10px; display: flex; justify-content: space-between; align-items: center;">
+                            <button class="like-btn" onclick="event.stopPropagation(); app.toggleLike('${sub._id}', this)">
+                                ❤️ <span class="like-count">${sub.likes || 0}</span>
+                            </button>
+                            ${isOwnSubmission ? `
+                                <div>
+                                    <button class="btn-sm" style="margin-right: 5px;" onclick="event.stopPropagation(); app.openEditModal('${sub._id}', '${safeReflection}', ${isPublic}, '${sub.subject || 'other'}')">✏️ 編輯</button>
+                                    <button class="btn-sm" style="color:red; border-color: red;" onclick="event.stopPropagation(); app.deleteSubmission('${sub._id}')">🗑️ 刪除</button>
+                                </div>
                             ` : ''}
                         </div>
                     </div>
@@ -721,56 +887,92 @@ const app = {
         } catch (e) { console.error("Like failed", e); }
     },
 
-    openEditModal: (submissionId, currentReflection) => {
-        const modal = document.getElementById('edit-modal');
-        const input = document.getElementById('edit-reflection-input');
-        const idField = document.getElementById('edit-submission-id');
+    openUploadModal: () => {
+        document.getElementById('upload-modal').classList.remove('hidden');
+    },
 
-        idField.value = submissionId;
-        input.value = currentReflection;
+    handleFreeUpload: async (event) => {
+        event.preventDefault();
+        const form = document.getElementById('free-upload-form');
+        const formData = new FormData(form);
+
+        // Add default ratings/taskId=null is handled by backend
+        // We just send the form data
+        // Check "isPublic" checkbox value - HTML checkboxes don't send 'true' unless checked, giving 'on' or nothing.
+        // But our backend expects 'true' or 'false' string if we want to be explicit, or boolean.
+        // Actually, FormData handles files well. For boolean 'isPublic', if checked it sends 'on' (or value).
+        // Let's manually fix isPublic to be explicit true/false string for the backend parser.
+        formData.set('isPublic', document.getElementById('upload-is-public').checked);
+
+        try {
+            const res = await fetch('/api/submissions', {
+                method: 'POST',
+                headers: { 'x-auth-token': app.state.token }, // No Content-Type for FormData
+                body: formData
+            });
+
+            if (res.ok) {
+                app.showMessage("發布成功！");
+                document.getElementById('upload-modal').classList.add('hidden');
+                form.reset();
+                app.loadGallery(); // Reload gallery
+            } else {
+                const err = await res.json();
+                app.showMessage("上傳失敗: " + (err.error || "未知錯誤"));
+            }
+        } catch (error) {
+            console.error(error);
+            app.showMessage("連線錯誤");
+        }
+    },
+
+    openEditModal: (submissionId, currentReflection, isPublic, subject) => {
+        const modal = document.getElementById('edit-modal');
+        document.getElementById('edit-submission-id').value = submissionId;
+        document.getElementById('edit-reflection-input').value = currentReflection;
+        document.getElementById('edit-is-public').checked = isPublic;
+        document.getElementById('edit-subject-input').value = subject;
+
         modal.classList.remove('hidden');
     },
 
     closeEditModal: () => {
-        const modal = document.getElementById('edit-modal');
-        modal.classList.add('hidden');
+        document.getElementById('edit-modal').classList.add('hidden');
     },
 
-    saveEdit: async () => {
+    handleEditSubmission: async () => {
         const submissionId = document.getElementById('edit-submission-id').value;
-        const newReflection = document.getElementById('edit-reflection-input').value;
+        const reflection = document.getElementById('edit-reflection-input').value;
+        const isPublic = document.getElementById('edit-is-public').checked;
+        const subject = document.getElementById('edit-subject-input').value;
+        const photoInput = document.getElementById('edit-photo-input');
 
-        if (!app.state.token) {
-            alert("請先登入");
-            app.closeEditModal();
-            return;
+        const formData = new FormData();
+        formData.append('reflection', reflection);
+        formData.append('isPublic', isPublic);
+        formData.append('subject', subject);
+
+        if (photoInput.files.length > 0) {
+            formData.append('photos', photoInput.files[0]);
         }
 
         try {
             const res = await fetch(`/api/submissions/${submissionId}`, {
                 method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'x-auth-token': app.state.token
-                },
-                body: JSON.stringify({ reflection: newReflection })
+                headers: { 'x-auth-token': app.state.token },
+                body: formData
             });
 
             if (res.ok) {
-                alert("更新成功！");
+                app.showMessage("修改成功！");
                 app.closeEditModal();
-                // Update the reflection text in the gallery item
-                const reflectionEl = document.getElementById(`reflection-${submissionId}`);
-                if (reflectionEl) {
-                    reflectionEl.textContent = newReflection ? `心得: ${newReflection}` : '';
-                }
+                app.loadGallery();
             } else {
-                const err = await res.json();
-                alert("更新失敗：" + (err.error || "未知錯誤"));
+                app.showMessage("修改失敗");
             }
-        } catch (error) {
-            console.error("Edit error:", error);
-            alert("更新失敗：網絡錯誤");
+        } catch (err) {
+            console.error(err);
+            app.showMessage("連線錯誤");
         }
     },
 
@@ -791,7 +993,7 @@ const app = {
             });
 
             if (res.ok) {
-                alert("刪除成功！");
+                app.showMessage("刪除成功！");
                 // Remove the item from the DOM
                 const item = document.getElementById(`submission-${submissionId}`);
                 if (item) {
@@ -799,11 +1001,11 @@ const app = {
                 }
             } else {
                 const err = await res.json();
-                alert("刪除失敗：" + (err.error || "未知錯誤"));
+                app.showMessage("刪除失敗：" + (err.error || "未知錯誤"));
             }
         } catch (error) {
             console.error("Delete error:", error);
-            alert("刪除失敗：網絡錯誤");
+            app.showMessage("刪除失敗：網絡錯誤");
         }
     },
 
@@ -811,14 +1013,13 @@ const app = {
         try {
             // Fetch all data needed
             const [subRes, tasksRes] = await Promise.all([
-                fetch('/api/submissions'),
+                fetch('/api/submissions/my', { headers: { 'x-auth-token': app.state.token } }),
                 fetch('/api/tasks')
             ]);
 
             // Check if responses are OK before parsing JSON
             if (!subRes.ok || !tasksRes.ok) {
                 console.warn('loadReview: API returned error, using fallback');
-                // Set empty/fallback data
                 document.getElementById('review-task-count').textContent = '0';
                 document.getElementById('review-photo-count').textContent = '0';
                 return;
@@ -832,44 +1033,18 @@ const app = {
             const currentMonth = now.getMonth();
             const currentYear = now.getFullYear();
 
-            // Filter for this month
-            const thisMonthSubs = submissions.filter(s => {
-                const d = new Date(s.createdAt);
+            // Filter for current month
+            const thisMonthSubs = submissions.filter(sub => {
+                const d = new Date(sub.createdAt);
                 return d.getMonth() === currentMonth && d.getFullYear() === currentYear;
             });
 
-            // Filter for last month
-            const lastMonthSubs = submissions.filter(s => {
-                const d = new Date(s.createdAt);
-                // Simple check for previous month handle year wrap
-                let prevMonth = currentMonth - 1;
-                let prevYear = currentYear;
-                if (prevMonth < 0) { prevMonth = 11; prevYear--; }
-                return d.getMonth() === prevMonth && d.getFullYear() === prevYear;
-            });
+            const uniqueTasksCompleted = new Set(thisMonthSubs.filter(s => s.taskId).map(s => s.taskId)).size;
+            const totalPhotos = submissions.reduce((acc, sub) => acc + (sub.photos ? sub.photos.length : 0), 0);
 
-            // Count Task Completions (Unique tasks this month)
-            const uniqueTaskIdsThisMonth = new Set(thisMonthSubs.map(s => s.taskId));
-            const uniqueTaskIdsLastMonth = new Set(lastMonthSubs.map(s => s.taskId));
-
-            // Total Photos Uploaded
-            const totalPhotos = submissions.reduce((acc, curr) => acc + (curr.photos ? curr.photos.length : 0), 0);
-            const thisMonthPhotos = thisMonthSubs.reduce((acc, curr) => acc + (curr.photos ? curr.photos.length : 0), 0);
-            const lastMonthPhotos = lastMonthSubs.reduce((acc, curr) => acc + (curr.photos ? curr.photos.length : 0), 0);
-
-            // Calculate Growth
-            const taskGrowth = uniqueTaskIdsThisMonth.size - uniqueTaskIdsLastMonth.size;
-            const photoGrowth = thisMonthPhotos - lastMonthPhotos;
-
-            document.getElementById('review-task-count').textContent = uniqueTaskIdsThisMonth.size;
-            const taskGrowthEl = document.getElementById('review-task-change');
-            taskGrowthEl.textContent = `${taskGrowth >= 0 ? '+' : ''}${taskGrowth} vs 上月`;
-            taskGrowthEl.className = `stat-change ${taskGrowth >= 0 ? 'positive' : 'negative'}`;
-
+            // Update UI
+            document.getElementById('review-task-count').textContent = uniqueTasksCompleted;
             document.getElementById('review-photo-count').textContent = totalPhotos;
-            const photoGrowthEl = document.getElementById('review-photo-change');
-            photoGrowthEl.textContent = `${photoGrowth >= 0 ? '+' : ''}${photoGrowth} (本月)`;
-            photoGrowthEl.className = 'stat-change'; // just neutral for total accumulation context or positive
 
             // 2. Chapter Progress
             // Identify how many distinct chapters have at least one completed task
@@ -892,11 +1067,12 @@ const app = {
             let count = 0;
 
             submissions.forEach(s => {
-                if (s.rating) {
-                    skills.sharpness += parseInt(s.rating.sharpness || 0);
-                    skills.exposure += parseInt(s.rating.exposure || 0);
-                    skills.composition += parseInt(s.rating.composition || 0);
-                    skills.lighting += parseInt(s.rating.lighting || 0);
+                // Backend uses 'ratings' (plural)
+                if (s.ratings) {
+                    skills.sharpness += parseInt(s.ratings.sharpness || 0);
+                    skills.exposure += parseInt(s.ratings.exposure || 0);
+                    skills.composition += parseInt(s.ratings.composition || 0);
+                    skills.lighting += parseInt(s.ratings.lighting || 0);
                     count++;
                 }
             });
@@ -906,8 +1082,11 @@ const app = {
                 const setBar = (id, total) => {
                     const avg = total / count;
                     const pct = (avg / 5) * 100;
-                    document.getElementById(id).style.width = `${pct}%`;
-                    document.getElementById(id).textContent = avg.toFixed(1);
+                    const bar = document.getElementById(id);
+                    if (bar) {
+                        bar.style.width = `${pct}%`;
+                        bar.textContent = avg.toFixed(1);
+                    }
                 };
                 setBar('skill-sharpness', skills.sharpness);
                 setBar('skill-exposure', skills.exposure);
@@ -922,7 +1101,11 @@ const app = {
                 list.innerHTML = '<li>尚無近期活動</li>';
             } else {
                 list.innerHTML = recent.map(s => {
-                    const tName = taskMap[s.taskId] ? taskMap[s.taskId].title : `Task ${s.taskId}`;
+                    let tName = "自由上傳 (Personal Work)";
+                    if (s.taskId) {
+                        tName = taskMap[s.taskId] ? `任務：${taskMap[s.taskId].title}` : `任務 ID: ${s.taskId}`;
+                    }
+
                     const d = new Date(s.createdAt).toLocaleDateString();
                     return `
                         <li>

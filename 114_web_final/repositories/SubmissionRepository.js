@@ -72,9 +72,27 @@ class SubmissionRepository {
 
     async findSubmissionsByUser(userId) {
         try {
-            return await Submission.find({ userId }).sort({ createdAt: -1 });
+            return await Submission.find({ userId })
+                .populate('userId', 'nickname email')
+                .sort({ createdAt: -1 });
         } catch (error) {
             logger.error('SubmissionRepository.findSubmissionsByUser error:', error);
+            throw error;
+        }
+    }
+
+    // Alias for API compatibility
+    async getSubmissionsByUser(userId) {
+        return this.findSubmissionsByUser(userId);
+    }
+
+    async getPublicSubmissions() {
+        try {
+            return await Submission.find({ isPublic: true })
+                .populate('userId', 'nickname email')
+                .sort({ createdAt: -1 });
+        } catch (error) {
+            logger.error('SubmissionRepository.getPublicSubmissions error:', error);
             throw error;
         }
     }

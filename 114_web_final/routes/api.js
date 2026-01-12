@@ -11,6 +11,9 @@ const ProgressService = require('../services/ProgressService');
 // Repositories
 const SubmissionRepository = require('../repositories/SubmissionRepository');
 
+// Models (for direct operations)
+const Submission = require('../models/Submission');
+
 const logger = require('../utils/logger');
 
 // Multer Setup for Image Uploads
@@ -65,7 +68,7 @@ router.get('/tasks/:id', async (req, res) => {
 });
 
 // 3. Submissions
-// POST: Create a new submission
+// POST: Create a new submission (Free upload or Task-based)
 router.post('/submissions', [auth, upload.array('photos', 5)], async (req, res) => {
     try {
         logger.info('Received submission from user:', req.user.id);
@@ -73,12 +76,19 @@ router.post('/submissions', [auth, upload.array('photos', 5)], async (req, res) 
         const filePaths = req.files.map(file => '/uploads/' + file.filename);
 
         // Construct submission object
+        // Handle taskId: convert empty string or 'null' to null
+        let tid = req.body.taskId;
+        if (!tid || tid === 'null' || tid === 'undefined') {
+            tid = null;
+        }
+
         const submissionData = {
             userId: req.user.id,
-            taskId: req.body.taskId,
+            taskId: tid,
             photos: filePaths,
             subject: req.body.subject || 'other',
             reflection: req.body.reflection,
+            isPublic: req.body.isPublic === 'true', // Handle boolean from form-data
             ratings: {
                 sharpness: req.body.sharpness || 0,
                 exposure: req.body.exposure || 0,
@@ -89,8 +99,11 @@ router.post('/submissions', [auth, upload.array('photos', 5)], async (req, res) 
 
         const newSubmission = await SubmissionRepository.createSubmission(submissionData);
 
-        // Award XP using ProgressService
-        const progressResult = await ProgressService.awardXP(req.user.id, 100);
+        // Award XP only if associated with a task
+        let progressResult = { xpEarned: 0, currentLevel: 0 };
+        if (submissionData.taskId) {
+            progressResult = await ProgressService.awardXP(req.user.id, 100);
+        }
 
         res.json({
             message: "Submission Saved Successfully",
@@ -105,65 +118,10 @@ router.post('/submissions', [auth, upload.array('photos', 5)], async (req, res) 
     }
 });
 
-// GET: Retrieve current user's all submissions (public + private)
-router.get('/submissions/my', auth, async (req, res) => {
-    try {
-        const submissions = await SubmissionRepository.findSubmissionsByUser(req.user.id);
-        res.json(submissions);
-    } catch (err) {
-        logger.error('Fetch My Submissions Error:', err.message);
-        res.status(500).json({ error: "Failed to fetch submissions" });
-    }
-});
+// ... GET endpoints ...
 
-// GET: Retrieve all public submissions (from all users)
-router.get('/submissions/public', async (req, res) => {
-    try {
-        const submissions = await SubmissionRepository.findAllSubmissions({ isPublic: true });
-        res.json(submissions);
-    } catch (err) {
-        logger.error('Fetch Public Submissions Error:', err.message);
-        res.status(500).json({ error: "Failed to fetch public submissions" });
-    }
-});
-
-// Like a Submission
-router.post('/submissions/:id/like', auth, async (req, res) => {
-    try {
-        const submission = await SubmissionRepository.incrementLikes(req.params.id);
-        if (!submission) {
-            return res.status(404).json({ error: "Submission not found" });
-        }
-        res.json({ likes: submission.likes });
-    } catch (err) {
-        logger.error('Like submission error:', err.message);
-        res.status(500).json({ error: "Failed to like submission" });
-    }
-});
-
-// DELETE: Delete a submission
-router.delete('/submissions/:id', auth, async (req, res) => {
-    try {
-        const submission = await SubmissionRepository.findSubmissionById(req.params.id);
-        if (!submission) {
-            return res.status(404).json({ error: "Submission not found" });
-        }
-
-        // Check user ownership
-        if (submission.userId.toString() !== req.user.id) {
-            return res.status(401).json({ error: "User not authorized" });
-        }
-
-        await SubmissionRepository.deleteSubmission(req.params.id);
-        res.json({ message: "Submission removed" });
-    } catch (err) {
-        logger.error('Delete submission error:', err.message);
-        res.status(500).json({ error: "Server Error" });
-    }
-});
-
-// PUT: Update a submission (Reflection only for now)
-router.put('/submissions/:id', auth, async (req, res) => {
+// PUT: Update a submission
+router.put('/submissions/:id', [auth, upload.array('photos', 5)], async (req, res) => {
     try {
         const submission = await SubmissionRepository.findSubmissionById(req.params.id);
         if (!submission) {
@@ -177,8 +135,14 @@ router.put('/submissions/:id', auth, async (req, res) => {
 
         // Update fields
         const updateData = {};
-        if (req.body.reflection) {
-            updateData.reflection = req.body.reflection;
+        if (req.body.reflection) updateData.reflection = req.body.reflection;
+        if (req.body.subject) updateData.subject = req.body.subject;
+        if (req.body.isPublic !== undefined) updateData.isPublic = req.body.isPublic === 'true'; // Handle form-data
+
+        // Handle Photo Replacement
+        if (req.files && req.files.length > 0) {
+            const newFilePaths = req.files.map(file => '/uploads/' + file.filename);
+            updateData.photos = newFilePaths;
         }
 
         const updatedSubmission = await SubmissionRepository.updateSubmission(
@@ -189,6 +153,63 @@ router.put('/submissions/:id', auth, async (req, res) => {
         res.json(updatedSubmission);
     } catch (err) {
         logger.error('Update submission error:', err.message);
+        res.status(500).json({ error: "Server Error" });
+    }
+});
+
+// GET /submissions/my - Get user's submissions
+router.get('/submissions/my', auth, async (req, res) => {
+    try {
+        const submissions = await SubmissionRepository.getSubmissionsByUser(req.user.id);
+        res.json(submissions);
+    } catch (err) {
+        logger.error('Get my submissions error:', err.message);
+        res.status(500).json({ error: "Server Error" });
+    }
+});
+
+// GET /submissions/public - Get all public submissions
+router.get('/submissions/public', async (req, res) => {
+    try {
+        const submissions = await SubmissionRepository.getPublicSubmissions();
+        res.json(submissions);
+    } catch (err) {
+        logger.error('Get public submissions error:', err.message);
+        res.status(500).json({ error: "Server Error" });
+    }
+});
+
+// DELETE /submissions/:id - Delete a submission
+router.delete('/submissions/:id', auth, async (req, res) => {
+    try {
+        const submission = await Submission.findById(req.params.id);
+        if (!submission) return res.status(404).json({ error: "Submission not found" });
+
+        // Check ownership
+        if (submission.userId.toString() !== req.user.id) {
+            return res.status(403).json({ error: "Not authorized" });
+        }
+
+        await Submission.deleteOne({ _id: req.params.id });
+        res.json({ message: "Submission deleted" });
+    } catch (err) {
+        logger.error('Delete submission error:', err.message);
+        res.status(500).json({ error: "Server Error" });
+    }
+});
+
+// POST /submissions/:id/like - Like a submission
+router.post('/submissions/:id/like', auth, async (req, res) => {
+    try {
+        const submission = await Submission.findById(req.params.id);
+        if (!submission) return res.status(404).json({ error: "Submission not found" });
+
+        submission.likes = (submission.likes || 0) + 1;
+        await submission.save();
+
+        res.json({ likes: submission.likes });
+    } catch (err) {
+        logger.error('Like submission error:', err.message);
         res.status(500).json({ error: "Server Error" });
     }
 });

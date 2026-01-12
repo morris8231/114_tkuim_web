@@ -17,10 +17,20 @@ const seedData = async () => {
         console.log('🧹 Cleared existing Chapters and Tasks');
 
         // 1. Create Chapters
+        // New Order: 
+        // 0: Start
+        // 1: Exposure
+        // 2: Composition
+        // 3: Light
+        // 4: Color (Was 6)
+        // 5: Portrait (Was 4)
+        // 6: Street (Was 5)
+        // 7: Food (Was 8)
+        // 8: Portfolio (Was 7)
         const chapters = await Chapter.insertMany([
             {
                 title: "主題 0：起步與設定",
-                description: "工欲善其事，必先利其器",
+                description: "建立正確拍攝姿勢與穩定度、理解鏡頭焦段觀念，以及掌握對焦與安全快門。",
                 order: 0,
                 unlockRule: { requiredTasks: 0 },
                 resources: { videos: [], articles: [] }
@@ -70,9 +80,27 @@ const seedData = async () => {
                 }
             },
             {
-                title: "主題 4：色彩與風格",
-                description: "情緒的傳達",
+                // Moved from 6 to 4
+                title: "主題 4：攝影中的色彩",
+                description: "色彩心理學與情境氛圍",
                 order: 4,
+                unlockRule: { requiredTasks: 3 },
+                youtubeLink: "https://www.youtube.com/watch?v=OXv_67i8UR4",
+                resources: {
+                    videos: [
+                        { title: "通过颜色建立第一印象", link: "https://youtu.be/OXv_67i8UR4?si=fPCdvCjY76J9HX24", description: "色彩如何在極短時間內影響觀者的心理判斷與情緒感受。" },
+                        { title: "攝影師如何拍出不同顏色的背景", link: "https://youtu.be/Hl3-ajQIivc?si=-Qn9EXmK-P7CSTkJ", description: "透過燈光配置與背景材質控制，在拍攝當下設計背景顏色與情緒。" }
+                    ],
+                    articles: [
+                        { title: "【拍攝教學】閃光燈下的色彩藝術", link: "https://www.lomography.tw/magazine/336968-the-art-of-colorsplashing-tw", description: "介紹如何透過閃光燈搭配色片改變光線顏色，創造戲劇化的畫面情緒。" }
+                    ]
+                }
+            },
+            {
+                // Was 4, now 5
+                title: "主題 5：人像攝影",
+                description: "情緒的傳達",
+                order: 5,
                 unlockRule: { requiredTasks: 3 },
                 youtubeLink: "https://www.youtube.com/watch?v=muXeSghtLwE",
                 resources: {
@@ -86,9 +114,10 @@ const seedData = async () => {
                 }
             },
             {
-                title: "主題 5：街拍與紀實",
+                // Was 5, now 6
+                title: "主題 6：街拍與紀實",
                 description: "捕捉真實的瞬間",
-                order: 5,
+                order: 6,
                 unlockRule: { requiredTasks: 3 },
                 youtubeLink: "https://www.youtube.com/watch?v=Cd-4KP0fF1k",
                 resources: {
@@ -102,47 +131,33 @@ const seedData = async () => {
                 }
             },
             {
-                title: "主題 6：人像攝影",
-                description: "與人的互動與拍攝",
-                order: 6,
-                unlockRule: { requiredTasks: 3 },
-                youtubeLink: "https://www.youtube.com/watch?v=t5Op1Dg1Y0E",
-                resources: {
-                    videos: [
-                        { title: "Natural Light Portrait Photography Tips", link: "https://www.youtube.com/results?search_query=Natural+Light+Portrait+Photography+Tips+Adorama", description: "Adorama TV / B&H Photo 自然光人像拍攝技巧。" }
-                    ],
-                    articles: [
-                        { title: "人像攝影自然光教學 (Tim Ting / 哈鏡頭)", link: "https://www.google.com/search?q=%E4%BA%BA%E5%83%8F%E6%94%9D%E5%BD%B1+%E8%87%AA%E7%84%B6%E5%85%89+%E6%95%99%E5%AD%B8+Tim+Ting", description: "自然光人像拍攝技巧分享。" }
-                    ]
-                }
-            },
-            {
-                title: "主題 7：個人創作與作品集",
-                description: "發展你的攝影風格",
+                title: "主題 7：食物攝影",
+                description: "透過自然光、構圖、質感細節掌握食物攝影核心技巧，建立個人食物攝影風格與作品表現手法。",
                 order: 7,
                 unlockRule: { requiredTasks: 3 },
-                youtubeLink: "https://www.youtube.com/watch?v=cjBve1qwCmA",
                 resources: {
                     videos: [
-                        { title: "How to Develop a Photo Series", link: "https://www.youtube.com/results?search_query=How+to+Develop+a+Photo+Series", description: "如何構思與發展系列攝影作品。" },
-                        { title: "Building Your Photography Portfolio", link: "https://www.youtube.com/results?search_query=Building+Your+Photography+Portfolio", description: "建立個人攝影作品集的建議。" }
+                        { title: "FOOD PHOTOGRAPHY NATURAL LIGHTING TIPS", link: "https://www.youtube.com/watch?v=MW6IW2ygWHg", description: "示範如何善用自然光（尤其側光與窗邊光）拍攝食物照片。" }
                     ],
                     articles: [
-                        { title: "Fstoppers / DPS Photo Series Ideas", link: "https://digital-photography-school.com/8-ideas-create-photo-series/", description: "英文文章談如何構思系列作品。" }
+                        { title: "食物攝影有什麼技巧？9大構圖教學", link: "https://www.virllage.com/articles/foodphotography", description: "列出九大拍攝技巧，包括光線運用、角度選擇與質感呈現。" }
                     ]
                 }
             },
             {
-                title: "主題 8：食物與靜物",
-                description: "生活中的靜謐之美",
+                // Was 7, now 8 (Swapped with Food)
+                title: "主題 8：作品整理與個人風格",
+                description: "整理作品集、回顧風格與成長紀錄，學會以系統化思維呈現你的攝影成果與美學脈絡。",
                 order: 8,
                 unlockRule: { requiredTasks: 3 },
+                youtubeLink: "https://www.youtube.com/watch?v=Q6zUlOYJ0l8",
                 resources: {
                     videos: [
-                        { title: "Shooting Still Life Photography for Beginners!", link: "https://www.youtube.com/watch?v=tgymaO3ZEXc", description: "針對靜物 / 產品照片拍攝技巧入門教學。" }
+                        { title: "Photography Portfolio Tips — How to Select Your Best Photos", link: "https://www.youtube.com/watch?v=Q6zUlOYJ0l8", description: "示範如何從拍攝集選出「代表性、視覺統一性與敘事性」兼具的照片。" },
+                        { title: "如何用作品集顯示你的攝影風格", link: "https://www.youtube.com/watch?v=YXRPR3y-tKw", description: "說明如何透過作品集建立自己的攝影語言，並分析相互呼應的風格特色。" }
                     ],
                     articles: [
-                        { title: "攝影教學大補帖", link: "https://aihowlive.com/%E5%A6%82%E4%BD%95%E9%80%B2%E8%A1%8C%E6%94%9D%E5%BD%B1%E6%95%99%E5%AD%B8/", description: "涵蓋多種拍攝題材技巧（含靜物/光線/編排）。" }
+                        { title: "11 Photography Portfolio Tips for Impressing People", link: "https://expertphotography.com/create-a-photography-portfolio/", description: "提供作品集挑選技巧，包括如何挑出最具代表性、品質高且能展示風格的照片。" }
                     ]
                 }
             }
@@ -152,8 +167,42 @@ const seedData = async () => {
         // 2. Create Tasks for Chapter 0
         const ch0 = chapters[0];
         await Task.insertMany([
-            { chapterId: ch0._id, title: "握持與穩定", concept: "穩定的相機是清晰照片的基礎", instructions: "請上傳 3 張使用不同支撐方式（手持夾緊、依託牆壁、使用腳架/桌面）拍攝的照片。", difficulty: 1, order: 1 },
-            { chapterId: ch0._id, title: "了解你的鏡頭", concept: "廣角 vs 長焦", instructions: "站在同一位置，分別用最廣角端與最望遠端拍攝同一主體，觀察透視變化。", difficulty: 1, order: 2 },
+            {
+                chapterId: ch0._id,
+                title: "0-1 握持與穩定",
+                concept: "拍得穩、拍得清楚",
+                instructions: "請上傳 3 張使用不同支撐方式（手持夾緊、依託牆壁、使用腳架/桌面）拍攝的照片，體會穩定度的差異。",
+                difficulty: 1,
+                order: 1,
+                resources: [
+                    { type: 'article', title: "穩定先決！怎樣拿好你的相機", link: "https://www.fotobeginner.com/9170/how-to-hold-your-camera/", summary: "說明正確的相機握持方式如何有效降低手震，包括雙手分工與支撐點運用。" },
+                    { type: 'video', title: "How to Hold a Camera Properly", link: "https://www.youtube.com/watch?v=hISuhcK5vdE", summary: "示範正確與錯誤的相機握持姿勢，說明如何透過姿勢、呼吸與支撐點避免晃動。" }
+                ]
+            },
+            {
+                chapterId: ch0._id,
+                title: "0-2 了解你的鏡頭",
+                concept: "鏡頭視角",
+                instructions: "站在同一位置，分別用最廣角端與最望遠端拍攝同一主體，觀察透視變化與空間感的不同。",
+                difficulty: 1,
+                order: 2,
+                resources: [
+                    { type: 'article', title: "Camera Lenses Explained — How Do They Work?", link: "https://www.studiobinder.com/blog/understanding-camera-lenses-explained/", summary: "從鏡頭原理與焦段概念切入，解釋廣角、標準、望遠鏡頭在視角與透視上的差異。" },
+                    { type: 'video', title: "【硬核科普】焦段是什么？", link: "https://www.youtube.com/watch?v=Md3NVa_kwiE", summary: "解析「焦段」本質，說明焦段如何影響視角、空間感與畫面比例。" }
+                ]
+            },
+            {
+                chapterId: ch0._id,
+                title: "0-3 對焦方式與安全快門",
+                concept: "安全快門",
+                instructions: "練習計算並使用你的安全快門速度進行拍攝（例如焦距倒數），比較不同快門速度下的清晰度。",
+                difficulty: 2,
+                order: 3,
+                resources: [
+                    { type: 'article', title: "「安全快門算法」：手持拍攝穩定清晰的秘密武器", link: "https://www.whbydcc.com/安全快門算法/", summary: "說明手持拍攝時，快門速度如何影響清晰度，以及焦段與手震的關係。" },
+                    { type: 'video', title: "攝影新手一定會遇到的 5 種模糊原因", link: "https://www.youtube.com/watch?v=V7z7BAZdt2M", summary: "整理新手常遇到的模糊問題（手震、對焦錯誤等）並提供改善方式。" }
+                ]
+            }
         ]);
 
         // 3. Create Tasks for Chapter 1
@@ -315,44 +364,244 @@ const seedData = async () => {
             }
         ]);
 
-        // 6. Create Tasks for Chapter 4
+
+        // 6. Create Tasks for Chapter 4 (Color, was 6)
         const ch4 = chapters[4];
         await Task.insertMany([
-            { chapterId: ch4._id, title: "色彩情緒", concept: "冷暖色調", instructions: "拍攝兩組照片：一組以暖色調為主，一組以冷色調為主，表達不同情緒。", difficulty: 3, order: 1, tutorialLink: "https://lenslesson.com/beginner-photography/art-of-color-theory-photography/", refLink: "https://www.imagely.com/color-theory-photography-and-design/" },
-            { chapterId: ch4._id, title: "白平衡實驗", concept: "色溫控制", instructions: "同一場景使用不同白平衡設定（日光、陰天、鎢絲燈等）拍攝，觀察差異。", difficulty: 2, order: 2, tutorialLink: "https://lenslesson.com/beginner-photography/art-of-color-theory-photography/" },
-            { chapterId: ch4._id, title: "黑白攝影", concept: "去除色彩的干擾", instructions: "拍攝黑白照片，專注於光影、質感和形狀的表現。", difficulty: 3, order: 3, refLink: "https://expertphotography.com/color-theory-landscape-photography/" },
+            {
+                chapterId: ch4._id,
+                title: "4-1 色彩心理學與視覺印象",
+                concept: "色彩心理",
+                instructions: "對同一場景或主體，透過白平衡或光源選擇，分別拍攝一張暖色調（溫馨）與一張冷色調（冷靜）的照片，觀察色彩如何建立第一印象。",
+                difficulty: 3,
+                order: 1,
+                resources: [
+                    { type: 'video', title: "通过颜色建立第一印象 (Youtube)", link: "https://youtu.be/OXv_67i8UR4?si=fPCdvCjY76J9HX24", summary: "影片說明色彩如何在極短時間內影響觀者的心理判斷與情緒感受，比主體更早被感知。" }
+                ]
+            },
+            {
+                chapterId: ch4._id,
+                title: "4-2 互補色對比",
+                concept: "色彩衝擊",
+                instructions: "尋找畫面中具有互補色關係（如紅/綠、藍/橘、黃/紫）的場景拍攝，利用色彩對比凸顯主體。",
+                difficulty: 3,
+                order: 2,
+                resources: [
+                    { type: 'article', title: "攝影色彩學：互補色 (Digiphoto)", link: "https://digiphoto.techbang.com/posts/1468-photography-color-match", summary: "文章解釋色環上的互補色關係，說明強烈對比色能產生視覺衝擊，吸引觀者目光，常應用於商業攝影與電影調色。" }
+                ]
+            },
+            {
+                chapterId: ch4._id,
+                title: "4-3 情境光色調控",
+                concept: "情境光運用",
+                instructions: "對同一主體使用不同顏色的光線（如濾色片、手機螢幕光或不同色溫燈光），拍攝出由背景顏色主導的對比情緒（例如：溫暖 vs 孤寂）。",
+                difficulty: 4,
+                order: 3,
+                resources: [
+                    { type: 'article', title: "【拍攝教學】閃光燈下的色彩藝術 (Lomography)", link: "https://www.lomography.tw/magazine/336968-the-art-of-colorsplashing-tw", summary: "介紹如何透過閃光燈搭配色片（Color Gel）改變光線顏色，創造戲劇化的畫面情緒與主體分離。" },
+                    { type: 'video', title: "攝影師如何拍出不同顏色的背景 (詹姆斯)", link: "https://youtu.be/Hl3-ajQIivc?si=-Qn9EXmK-P7CSTkJ", summary: "示範如何透過燈光配置與背景材質控制，在拍攝當下設計背景顏色與情緒，而非依賴後製。" }
+                ]
+            },
         ]);
 
-        // 7. Create Tasks for Chapter 5
+        // 7. Create Tasks for Chapter 5 (Portrait, was 4)
         const ch5 = chapters[5];
         await Task.insertMany([
-            { chapterId: ch5._id, title: "捕捉瞬間", concept: "街頭攝影", instructions: "在街頭拍攝有趣的瞬間或人物互動，保持自然真實。", difficulty: 4, order: 1, tutorialLink: "https://expertphotography.com/how-to-select-best-photos/", refLink: "https://digital-photography-school.com/8-tips-narrative-photography/" },
-            { chapterId: ch5._id, title: "環境人像", concept: "人與環境", instructions: "拍攝人物與其環境的關係，講述一個故事。", difficulty: 4, order: 2, refLink: "https://digital-photography-school.com/8-tips-narrative-photography/" },
-            { chapterId: ch5._id, title: "細節觀察", concept: "微距與特寫", instructions: "拍攝日常生活中被忽略的細節（紋理、圖案、小物件等）。", difficulty: 3, order: 3 },
+            {
+                chapterId: ch5._id,
+                title: "5-1 人像光線與柔光",
+                concept: "人像用光",
+                instructions: "拍攝正面光與側光各一張人像。嘗試利用反射光或遮蔽創造柔光效果。",
+                difficulty: 2,
+                order: 1,
+                resources: [
+                    { type: 'article', title: "攝影光線與拍攝技巧 (Zach Photography)", link: "https://zachphotography.com/lighting-techniques/", summary: "文章說明人像拍攝中常見的光線方向對人物立體感的影響，並特別強調「柔光」的重要性，指出陰天、窗邊散射光或利用反射牆面都能讓光線更柔和。" },
+                    { type: 'video', title: "硬光與柔光怎麼分？打燈小教室柔光篇", link: "https://youtu.be/wlCnPc4VgPg?si=PTl0M-k1vwPHs6rt", summary: "影片清楚比較硬光與柔光的差異，並實際示範柔光如何讓人像膚質更自然。即使在自然光環境下，也能透過遮擋、反射或改變拍攝角度，創造接近棚拍的柔光效果。" }
+                ]
+            },
+            {
+                chapterId: ch5._id,
+                title: "5-2 人像構圖與場景",
+                concept: "場景選擇",
+                instructions: "選擇一個乾淨、有層次的背景，拍攝一張人像，注意背景不要干擾主體。",
+                difficulty: 2,
+                order: 2,
+                resources: [
+                    { type: 'article', title: "人像攝影課技巧複習 3－選景 (Kevin Wang)", link: "https://kevinimage.com/portrait-location/", summary: "文章分享選擇人像場景的思考流程：尋找大色塊背景、簡化畫面干擾、利用線條與層次增加畫面深度，以及觀察現場光線方向。" },
+                    { type: 'video', title: "攝影師教你呈現電影式旅拍！(VS MEDIA × Louis)", link: "https://www.youtube.com/watch?v=QE33cE0y6NQ", summary: "Louis 透過實拍示範如何選擇乾淨、有層次的背景，並運用三分法、前景與留白，讓人像畫面更有電影感。" }
+                ]
+            },
+            {
+                chapterId: ch5._id,
+                title: "5-3 姿勢引導與表情",
+                concept: "引導技巧",
+                instructions: "引導被攝者完成至少三個不同姿勢與表情，嘗試捕捉自然瞬間。",
+                difficulty: 3,
+                order: 3,
+                resources: [
+                    { type: 'article', title: "Capturing Better Portraits Between Poses (DPS)", link: "https://digital-photography-school.com/capturing-better-portraits-between-poses/", summary: "文章指出好的人像往往出現在「姿勢之間」，攝影師應透過聊天與互動，讓自然表情出現。" },
+                    { type: 'video', title: "5 Easy Tips to Pose People Who Aren’t Models (B&H)", link: "https://www.youtube.com/watch?v=yr74CtwKoEk", summary: "影片提供 5 個實用技巧，教你如何引導非模特兒拍照，包括身體角度微調、手部擺放，以及用聊天方式捕捉自然表情。" }
+                ]
+            },
+            {
+                chapterId: ch5._id,
+                title: "5-4 聚焦與景深選擇",
+                concept: "景深控制",
+                instructions: "使用不同光圈拍攝同一人物，比較淺景深（背景模糊）與深景深的效果。",
+                difficulty: 3,
+                order: 4,
+                resources: [
+                    { type: 'article', title: "如何拍出淺景深 (Fotobeginner)", link: "https://www.fotobeginner.com/14702/101-photography-tips-for-beginners/", summary: "文章整理影響景深的關鍵因素：光圈大小、拍攝距離、焦段與背景距離，建議對焦在眼睛上，並避免背景過於接近主體。" },
+                    { type: 'video', title: "所以說，淺景深怎麼了嗎？", link: "https://www.youtube.com/watch?v=ChlwMDbVjGU&t=188s", summary: "影片從觀念層面重新思考「淺景深是否一定比較好」，說明景深應依畫面需求選擇，透過實例比較不同景深對人像氛圍與故事感的影響。" }
+                ]
+            }
         ]);
 
-        // 8. Create Tasks for Chapter 6
+        // 8. Create Tasks for Chapter 6 (Street, was 5)
         const ch6 = chapters[6];
         await Task.insertMany([
-            { chapterId: ch6._id, title: "自然光人像", concept: "窗光運用", instructions: "使用窗戶光線拍攝人像，表現柔和的光影過渡。", difficulty: 3, order: 1, tutorialLink: "https://photographylife.com/portrait-photography-tips", refLink: "https://digital-photography-school.com/use-natural-window-light-portraits/" },
-            { chapterId: ch6._id, title: "情緒捕捉", concept: "表情與姿態", instructions: "拍攝展現不同情緒的人像（快樂、沉思、專注等）。", difficulty: 4, order: 2, tutorialLink: "https://1on1.today/blog/%E3%80%90%E6%94%9D%E5%BD%B1%E5%85%A5%E9%96%80%E3%80%91%E6%94%9D%E5%BD%B1%E5%A4%A7%E5%B8%AB%E7%9A%84%E4%BA%BA%E5%83%8F%E6%94%9D%E5%BD%B1%E6%95%99%E5%AD%B8/" },
-            { chapterId: ch6._id, title: "環境肖像", concept: "背景與主體", instructions: "將人物放在有意義的環境中，背景要能補充主體的故事。", difficulty: 4, order: 3, refLink: "https://photographylife.com/portrait-photography-tips" },
+            {
+                chapterId: ch6._id,
+                title: "6-1 找出畫面故事性",
+                concept: "瞬間、關係與情緒",
+                instructions: "尋找有敘事性的前景與背景，透過光線營造戲劇效果，耐心等待人物進入畫面。",
+                difficulty: 3,
+                order: 1,
+                resources: [
+                    { type: 'article', title: "手机街拍缺乏故事感？试试这4个超实用小技巧", link: "https://www.wenxiaobai.com/api/expends/detail?article=46e22af4-ad6e-49c5-90af-633ac372962c", summary: "文章以布列松提出的「決定性瞬間」為核心，說明街拍故事感來自於瞬間、關係與情緒，而非單一主體。提出四個實用技巧：1. 保持高度專注，隨時準備按下快門；2. 尋找有敘事性的前景與背景；3. 善用光線營造戲劇效果；4. 耐心等待人物進入畫面形成故事。適合建立「先看懂畫面，再拍」的街拍思維。" },
+                    { type: 'video', title: "攝影教學：街拍沒想法？街頭故事感提升的4個觀念", link: "https://www.youtube.com/watch?v=jUX9YLKZJtY", summary: "影片以實拍案例說明如何在街頭建立故事感，重點在於「環境先行、人物後進」。講解如何觀察光影、背景與行人互動，並透過等待與預判，讓畫面自然產生敘事性，而非追著人拍。" }
+                ]
+            },
+            {
+                chapterId: ch6._id,
+                title: "6-2 快速構圖與預判時機",
+                concept: "預判與節奏",
+                instructions: "提前構圖、等待人物進入畫面，利用幾何線條簡化畫面。",
+                difficulty: 4,
+                order: 2,
+                resources: [
+                    { type: 'article', title: "精彩相片拍攝教學（3）－街頭斑馬線如何拍？ (Fotobeginner)", link: "https://www.fotobeginner.com/25604/photo-tutorial-3-street-photography/", summary: "文章以斑馬線為例，說明街拍中如何提前構圖、等待人物進入畫面。包含：利用幾何線條簡化畫面、先決定構圖位置再等人、使用快門速度捕捉動作節奏、預判行人方向，提高成功率。非常適合練習「快而不亂」的街拍節奏。" },
+                    { type: 'video', title: "街拍要領大公開！一支影片帶你攻略街頭攝影基本功（上）", link: "https://www.youtube.com/watch?v=WccdMYk7mdE", summary: "Kevin Wang 說明街拍前應先設定好曝光與對焦，並選定拍攝位置，等待畫面成立。強調「構圖在前、快門在後」，以及觀察人流與動線的重要性，是建立街拍預判能力的入門影片。" }
+                ]
+            },
+            {
+                chapterId: ch6._id,
+                title: "6-3 觀察街景與人群互動",
+                concept: "觀看與理解",
+                instructions: "放慢腳步、觀察空間、光影與人群關係，建立屬於自己的街拍節奏。",
+                difficulty: 4,
+                order: 3,
+                resources: [
+                    { type: 'article', title: "街拍攝影的第一課，不是拍，是「看」 (OM Art Studio)", link: "https://www.omartstudio.com.tw/post/【街拍攝影的第一課，不是拍，是「看」】-1", summary: "文章強調街拍的本質是「觀看與理解」，而非連續快門。透過放慢腳步、觀察空間、光影與人群關係，訓練對街景節奏的敏感度，讓拍攝行為建立在理解之上。" },
+                    { type: 'video', title: "【攝影小教室】我的六種街拍進行方式｜ft. Artlist – 我都 ok 呀", link: "https://www.youtube.com/watch?v=ydbarewRdZA", summary: "影片分享六種實際街拍進行方式，包括定點等待、邊走邊拍、利用反射與遮擋、觀察人群互動等。重點在於建立屬於自己的街拍節奏，並學會如何在不干擾他人的情況下捕捉真實互動。" }
+                ]
+            },
+            {
+                chapterId: ch6._id,
+                title: "6-4 街拍倫理與距離感",
+                concept: "倫理與尊重",
+                instructions: "了解法律允許與倫理適當的界線，拍攝時保持同理心，避免剝削。",
+                difficulty: 3,
+                order: 4,
+                resources: [
+                    { type: 'article', title: "The Law and Ethics of Street Photography", link: "https://www.dostreetphotography.com/blog/law-and-ethics", summary: "文章清楚區分「法律允許」與「倫理是否適當」。重點包含：各國法律不同，需自行了解拍攝所在地規範；合法不等於合理，倫理來自攝影師自身判斷；遇到拍攝對象反對時，尊重比堅持作品更重要；可透過剪影、背影、遮擋等方式降低辨識性。" },
+                    { type: 'video', title: "Street Photography Ethics: Why Your Photos Might Be Exploitative", link: "https://www.youtube.com/watch?v=38EK1lDOB0U", summary: "影片深入探討街拍可能涉及的剝削問題，提醒攝影師避免獵奇、避免拍攝弱勢者作為素材。強調「沒有一張照片值得讓別人不舒服」，建立以同理心為核心的街拍倫理觀。" }
+                ]
+            }
         ]);
 
         // 9. Create Tasks for Chapter 7
         const ch7 = chapters[7];
         await Task.insertMany([
-            { chapterId: ch7._id, title: "主題系列創作", concept: "系列思維", instructions: "選擇一個主題（如「城市角落」、「光影」等），拍攝至少 5 張相關聯的照片。", difficulty: 5, order: 1, tutorialLink: "https://photographylife.com/landscape-photography-tips", refLink: "https://www.schubertphotography.com/landscape-photography-for-beginners/" },
-            { chapterId: ch7._id, title: "個人風格探索", concept: "找到你的聲音", instructions: "回顧之前的作品，找出你喜歡的元素，創作 3 張體現個人風格的照片。", difficulty: 5, order: 2, tutorialLink: "https://expertphotography.com/cityscape-photography-tips/" },
-            { chapterId: ch7._id, title: "最終作品集", concept: "綜合運用", instructions: "精選 8-10 張最佳作品，組成一個有主題的作品集，展現你的學習成果。", difficulty: 5, order: 3, refLink: "https://aihowlive.com/%E5%A6%82%E4%BD%95%E9%80%B2%E8%A1%8C%E6%94%9D%E5%BD%B1%E6%95%99%E5%AD%B8/" },
+            {
+                chapterId: ch7._id,
+                title: "7-1 自然光食物攝影",
+                concept: "光線運用",
+                instructions: "利用窗邊自然光拍攝食物，定位光線方向（如側光或逆光），透過控制光線形狀和位置，展現食物的色彩與質感。",
+                difficulty: 3,
+                order: 1,
+                resources: [
+                    { type: 'article', title: "How to Use Natural Light for Food Photography", link: "https://fotophile.com/how-to-use-natural-light-for-food-photography-a-practical-guide-for-photographers/", summary: "介紹自然光在食物攝影中的應用技巧，說明如何定位光線方向、利用窗戶光或側光打造誘人質感。" },
+                    { type: 'video', title: "FOOD PHOTOGRAPHY NATURAL LIGHTING TIPS", link: "https://www.youtube.com/watch?v=MW6IW2ygWHg", summary: "示範如何善用自然光（尤其側光與窗邊光）拍攝食物照片，避免直射強光造成過曝或硬陰影。" }
+                ]
+            },
+            {
+                chapterId: ch7._id,
+                title: "7-2 靜物構圖",
+                concept: "構圖技巧",
+                instructions: "運用三分法、引導線或負空間技巧拍攝食物靜物，透過道具和角度強化主體，提升影像吸引力。",
+                difficulty: 3,
+                order: 2,
+                resources: [
+                    { type: 'article', title: "10 Essential Food Photography Composition Techniques", link: "https://expertphotography.com/food-photography-composition/", summary: "整理食物攝影中最重要的構圖技巧，如三分法、引導線、負空間運用等。" },
+                    { type: 'video', title: "5 Composition Tips EVERY food photographer needs", link: "https://www.youtube.com/watch?v=gq-lw3cfTTg", summary: "分享5個食物攝影構圖技巧，運用視覺引導和層次來提升畫面質感。" }
+                ]
+            },
+            {
+                chapterId: ch7._id,
+                title: "7-3 食物攝影質感與細節",
+                concept: "質感與細節",
+                instructions: "運用光線與角度呈現食物的豐富層次與細節質感，注意背景與道具的搭配，營造視覺氛圍。",
+                difficulty: 4,
+                order: 3,
+                resources: [
+                    { type: 'article', title: "食物攝影有什麼技巧？9大構圖教學", link: "https://www.virllage.com/articles/foodphotography", summary: "列出九大拍攝技巧，包括光線運用、角度選擇、背景與道具搭配、景深管理與質感呈現。" },
+                    { type: 'video', title: "Composition Techniques for Food Photography", link: "https://www.youtube.com/watch?v=-ex097pA7Kg", summary: "分享多種食物攝影構圖與視覺安排技巧，提升作品質感與敘事能力。" }
+                ]
+            }
         ]);
 
-        // 10. Create Tasks for Chapter 8
+        // 10. Create Tasks for Chapter 8 (Portfolio, was 7 - Swap)
         const ch8 = chapters[8];
         await Task.insertMany([
-            { chapterId: ch8._id, title: "自然光食物攝影", concept: "光線運用", instructions: "利用窗邊自然光拍攝食物，嘗試侧光或逆光拍攝，展現食物質感。", difficulty: 3, order: 1, tutorialLink: "https://www.youtube.com/watch?v=tgymaO3ZEXc" },
-            { chapterId: ch8._id, title: "靜物構圖", concept: "擺盤與構圖", instructions: "練習不同的構圖方式（如平拍、45度角、俯拍）拍攝靜物組合。", difficulty: 3, order: 2, refLink: "https://aihowlive.com/%E5%A6%82%E4%BD%95%E9%80%B2%E8%A1%8C%E6%94%9D%E5%BD%B1%E6%95%99%E5%AD%B8/" },
-            { chapterId: ch8._id, title: "質感與細節", concept: "微距與光影", instructions: "近距離拍攝物品的質感與細節，利用光影凸顯立體感。", difficulty: 4, order: 3 }
+            {
+                chapterId: ch8._id,
+                title: "8-1 如何挑選代表作品",
+                concept: "作品挑選",
+                instructions: "從大量作品中挑出最具代表性、品質高、色調一致且能展示風格的照片，作為作品集的基礎。",
+                difficulty: 3,
+                order: 1,
+                resources: [
+                    { type: 'article', title: "11 Photography Portfolio Tips for Impressing People", link: "https://expertphotography.com/create-a-photography-portfolio/", summary: "提供作品集挑選技巧，提醒作品集應精簡而有力，讓每張照片都有存在的理由。" },
+                    { type: 'video', title: "Photography Portfolio Tips — How to Select Your Best Photos", link: "https://www.youtube.com/watch?v=Q6zUlOYJ0l8", summary: "示範如何先過濾曝光問題與重複畫面，再以主體表現與情緒影響力精選作品。" }
+                ]
+            },
+            {
+                chapterId: ch8._id,
+                title: "8-2 整理與歸類照片",
+                concept: "照片管理",
+                instructions: "利用分類、標記與批量編輯工具（如 Lightroom）整理照片，建立系統化且易於檢索的作品資料庫。",
+                difficulty: 3,
+                order: 2,
+                resources: [
+                    { type: 'article', title: "照片太多怎麼整理？", link: "https://www.isuperman.tw/%E7%85%A7%E7%89%87%E5%A4%AA%E5%A4%9A%E6%80%8E%E9%BA%BC%E6%95%B4%E7%90%86%EF%BC%9F/", summary: "說明藉由分類、標記與批量編輯等工具，讓照片保存與管理更有效率。" },
+                    { type: 'video', title: "Lightroom照片整理技巧教學", link: "https://www.youtube.com/watch?v=8tLLFdY7_tg", summary: "實際示範利用 Lightroom 的標記、旗標與集集功能來快速整理大量照片。" }
+                ]
+            },
+            {
+                chapterId: ch8._id,
+                title: "8-3 風格回顧與語言建立",
+                concept: "風格建立",
+                instructions: "挑選能夠反映你個人人格與視覺面貌的作品，並以一致的視覺風格與主題，描述你的攝影個人特色。",
+                difficulty: 4,
+                order: 3,
+                resources: [
+                    { type: 'article', title: "How to Curate and Organize Your Photo Portfolio", link: "https://www.needpix.com/blog/how-to-curate-and-organize-your-photo-portfolio-to-showcase-your-best-work/", summary: "強調整理作品時要以「一致的視覺風格與主題」去描述你的攝影特色。" },
+                    { type: 'video', title: "如何用作品集顯示你的攝影風格", link: "https://www.youtube.com/watch?v=YXRPR3y-tKw", summary: "說明如何透過作品集建立自己的攝影語言，並分析複數作品之間如何互相呼應。" }
+                ]
+            },
+            {
+                chapterId: ch8._id,
+                title: "8-4 線上作品牆建立與分享",
+                concept: "作品展示",
+                instructions: "選擇適合的線上平台建立作品牆，發表本月代表作，並撰寫簡短的風格描述。",
+                difficulty: 4,
+                order: 4,
+                resources: [
+                    { type: 'article', title: "新手攝影師如何建立自己的作品集? 6個好用平台介紹", link: "https://evanpmba.com/%E6%96%B0%E6%89%8B%E6%94%9D%E5%BD%B1%E5%B8%AB%E5%A6%82%E4%BD%95%E5%BB%BA%E7%AB%8B%E8%87%AA%E5%B7%B1%E7%9A%84%E4%BD%9C%E5%93%81%E9%9B%86-6%E5%80%8B%E5%A5%BD%E7%94%A8%E5%B9%B3%E5%8F%B0%E4%BB%8B%E7%B4%B9/", summary: "介紹 Behance、Flickr 等線上平台，幫助建立線上作品牆。" },
+                    { type: 'video', title: "Photography Portfolio Websites – Best Platforms", link: "https://www.youtube.com/watch?v=m-jhzA1sxHc", summary: "介紹不同的攝影作品集網站優缺點，示範如何快速建立線上作品牆。" }
+                ]
+            }
         ]);
 
         console.log('✅ Tasks Seeded for all 8 Chapters');

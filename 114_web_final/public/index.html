@@ -261,17 +261,84 @@
         <!-- View: Edit Modal -->
         <div id="edit-modal" class="modal hidden">
             <div class="modal-content">
-                <h3>編輯心得</h3>
+                <h3>編輯作品</h3>
                 <input type="hidden" id="edit-submission-id">
-                <textarea id="edit-reflection-input"></textarea>
+
+                <div class="form-group">
+                    <label>更換照片 (可選)</label>
+                    <input type="file" id="edit-photo-input" accept="image/*">
+                </div>
+
+                <div class="form-group">
+                    <label>題材分類</label>
+                    <select id="edit-subject-input">
+                        <option value="portrait">人像 (Portrait)</option>
+                        <option value="landscape">風景 (Landscape)</option>
+                        <option value="still">靜物 (Still Life)</option>
+                        <option value="street">街拍 (Street)</option>
+                        <option value="other">其他</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>心得</label>
+                    <textarea id="edit-reflection-input" rows="3"></textarea>
+                </div>
+
+                <div class="form-group" style="display: flex; align-items: center; gap: 10px;">
+                    <input type="checkbox" id="edit-is-public" style="width: auto;">
+                    <label for="edit-is-public" style="margin: 0;">🌐 公開此作品</label>
+                </div>
+
                 <div class="modal-actions">
-                    <button id="edit-cancel-btn" class="btn-sm">取消</button>
-                    <button id="edit-save-btn" class="btn-primary">儲存</button>
+                    <button id="edit-cancel-btn" class="btn-sm" onclick="app.closeEditModal()">取消</button>
+                    <button id="edit-save-btn" class="btn-primary" onclick="app.handleEditSubmission()">儲存變更</button>
                 </div>
             </div>
         </div>
 
-        <!-- View: Message Modal (New) -->
+        <!-- View: Upload Modal (New) -->
+        <div id="upload-modal" class="modal hidden">
+            <div class="modal-content">
+                <h3>上傳作品 (Free Upload)</h3>
+                <form id="free-upload-form" onsubmit="event.preventDefault(); app.handleFreeUpload(event);">
+                    <div class="form-group">
+                        <label>選擇照片 (Max 5) *</label>
+                        <input type="file" id="upload-photos" name="photos" multiple accept="image/*" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>題材分類</label>
+                        <select id="upload-subject" name="subject">
+                            <option value="portrait">人像 (Portrait)</option>
+                            <option value="landscape">風景 (Landscape)</option>
+                            <option value="still">靜物 (Still Life)</option>
+                            <option value="street">街拍 (Street)</option>
+                            <option value="other">其他</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>心得</label>
+                        <textarea id="upload-reflection" name="reflection" rows="3"
+                            placeholder="寫下你的創作想法..."></textarea>
+                    </div>
+
+                    <div class="form-group" style="display: flex; align-items: center; gap: 10px;">
+                        <input type="checkbox" id="upload-is-public" name="isPublic" style="width: auto;">
+                        <label for="upload-is-public" style="margin: 0;">📢 公開此作品</label>
+                    </div>
+
+                    <div class="modal-actions">
+                        <button type="button" class="btn-sm"
+                            onclick="document.getElementById('upload-modal').classList.add('hidden')">取消</button>
+                        <button type="submit" class="btn-primary">上傳</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- View: Message Modal -->
         <div id="message-modal" class="modal hidden">
             <div class="modal-content" style="max-width: 300px; text-align: center;">
                 <h3 id="msg-modal-title" style="margin-bottom: 15px;">提示</h3>
@@ -279,6 +346,17 @@
                 <div class="modal-actions" style="justify-content: center;">
                     <button id="msg-modal-ok-btn" class="btn-primary" style="width: 100%;">確定</button>
                 </div>
+            </div>
+        </div>
+
+        <!-- View: Lightbox Modal (New) -->
+        <div id="lightbox-modal" class="modal hidden" onclick="if(event.target === this) this.classList.add('hidden')">
+            <div
+                style="position: relative; max-width: 90%; max-height: 90%; margin: auto; top: 50%; transform: translateY(-50%); text-align: center;">
+                <img id="lightbox-img" src=""
+                    style="max-width: 100%; max-height: 85vh; border: 2px solid #fff; box-shadow: 0 0 20px rgba(0,0,0,0.8);">
+                <button onclick="document.getElementById('lightbox-modal').classList.add('hidden')"
+                    style="position: absolute; top: -40px; right: 0; background: none; border: none; color: white; font-size: 2em; cursor: pointer;">&times;</button>
             </div>
         </div>
 

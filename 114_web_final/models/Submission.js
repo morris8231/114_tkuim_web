@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const SubmissionSchema = new mongoose.Schema({
     userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-    taskId: { type: mongoose.Schema.Types.ObjectId, ref: 'Task', required: true },
+    taskId: { type: mongoose.Schema.Types.ObjectId, ref: 'Task', required: false },
     photos: [String], // Array of file paths
     subject: { type: String, enum: ['portrait', 'landscape', 'still', 'street', 'other'] },
     ratings: {
