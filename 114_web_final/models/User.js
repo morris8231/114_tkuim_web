@@ -10,6 +10,7 @@ const UserSchema = new mongoose.Schema({
     verificationToken: { type: String },
     verificationExpires: { type: Date },
     createdAt: { type: Date, default: Date.now },
+    lastLogin: { type: Date },
     xp: { type: Number, default: 0 },
     level: { type: Number, default: 1 },
     badges: [String],

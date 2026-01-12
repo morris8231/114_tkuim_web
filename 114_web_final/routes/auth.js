@@ -8,10 +8,10 @@ const logger = require('../utils/logger');
 // @desc    Register user
 // @access  Public
 router.post('/register', async (req, res) => {
-    const { nickname, email, password } = req.body;
+    const { nickname, email, password, adminSecret } = req.body;
 
     try {
-        const result = await AuthService.registerUser(nickname, email, password);
+        const result = await AuthService.registerUser(nickname, email, password, adminSecret);
         res.json(result);
     } catch (err) {
         logger.error('Register route error:', err.message);
@@ -43,6 +43,30 @@ router.post('/login', async (req, res) => {
     }
 });
 
+// @route   POST api/auth/resend-verification
+// @desc    Resend verification email
+// @access  Public
+router.post('/resend-verification', async (req, res) => {
+    const { email } = req.body;
+
+    try {
+        const result = await AuthService.resendVerificationEmail(email);
+        res.json(result);
+    } catch (err) {
+        logger.error('Resend verification route error:', err.message);
+        if (err.message === 'User not found') {
+            return res.status(404).json({ msg: 'User not found' });
+        }
+        if (err.message === 'Email already verified') {
+            return res.status(400).json({ msg: 'Email already verified' });
+        }
+        if (err.message === 'Please wait before requesting another verification email') {
+            return res.status(429).json({ msg: err.message });
+        }
+        res.status(500).json({ msg: 'Server error' });
+    }
+});
+
 // @route   GET api/auth/me
 // @desc    Get current user
 // @access  Private
@@ -62,50 +86,11 @@ router.get('/me', auth, async (req, res) => {
 router.get('/verify/:token', async (req, res) => {
     try {
         const result = await AuthService.verifyEmail(req.params.token);
-
-        // Redirect to frontend with success message
-        res.send(`
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <meta charset="UTF-8">
-                <title>驗證成功</title>
-                <style>
-                    body { font-family: Arial, sans-serif; text-align: center; padding: 50px; }
-                    .success { color: #4CAF50; font-size: 24px; margin-bottom: 20px; }
-                    .message { font-size: 18px; margin-bottom: 30px; }
-                    .btn { background: #000; color: white; padding: 12px 30px; text-decoration: none; border-radius: 4px; }
-                </style>
-            </head>
-            <body>
-                <div class="success">✅ ${result.msg}</div>
-                <div class="message">Email: ${result.email}</div>
-                <a href="/" class="btn">前往登入</a>
-            </body>
-            </html>
-        `);
+        // Return JSON for frontend JavaScript
+        res.json(result);
     } catch (err) {
         logger.error('Verify email error:', err.message);
-        res.send(`
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <meta charset="UTF-8">
-                <title>驗證失敗</title>
-                <style>
-                    body { font-family: Arial, sans-serif; text-align: center; padding: 50px; }
-                    .error { color: #f44336; font-size: 24px; margin-bottom: 20px; }
-                    .message { font-size: 18px; margin-bottom: 30px; }
-                    .btn { background: #000; color: white; padding: 12px 30px; text-decoration: none; border-radius: 4px; }
-                </style>
-            </head>
-            <body>
-                <div class="error">❌ 驗證失敗</div>
-                <div class="message">${err.message}</div>
-                <a href="/" class="btn">返回首頁</a>
-            </body>
-            </html>
-        `);
+        res.status(400).json({ msg: err.message });
     }
 });
 

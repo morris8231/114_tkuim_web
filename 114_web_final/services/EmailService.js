@@ -20,7 +20,8 @@ class EmailService {
      */
     async sendVerificationEmail(email, token, nickname) {
         try {
-            const verificationUrl = `${process.env.BASE_URL}/api/auth/verify/${token}`;
+            // Use hash fragment for better email client compatibility
+            const verificationUrl = `${process.env.BASE_URL}/#verify-email?token=${token}`;
 
             const mailOptions = {
                 from: process.env.EMAIL_FROM || 'PhotoMission <noreply@photomission.com>',
@@ -69,6 +70,30 @@ class EmailService {
         } catch (error) {
             logger.error('EmailService.sendVerificationEmail error:', error);
             throw new Error('Failed to send verification email');
+        }
+    }
+
+    /**
+     * 發送通用郵件
+     * @param {string} to - 收件人 email
+     * @param {string} subject - 郵件主旨
+     * @param {string} htmlContent - HTML 內容
+     */
+    async sendEmail(to, subject, htmlContent) {
+        try {
+            const mailOptions = {
+                from: process.env.EMAIL_FROM || 'PhotoMission <noreply@photomission.com>',
+                to: to,
+                subject: subject,
+                html: htmlContent
+            };
+
+            await this.transporter.sendMail(mailOptions);
+            logger.success(`Email sent to ${to}: ${subject}`);
+            return true;
+        } catch (error) {
+            logger.error('EmailService.sendEmail error:', error);
+            throw new Error('Failed to send email');
         }
     }
 

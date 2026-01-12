@@ -650,3 +650,419 @@ body.bg-ch7::before {
 .btn-sm:hover {
     background: #e0e0e0;
 }
+
+/* ============================================
+   RESPONSIVE DESIGN (RWD)
+   ============================================ */
+
+/* Tablet & Below (768px) */
+@media (max-width: 768px) {
+
+    /* Header Navigation */
+    .app-header .container {
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .main-nav {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .main-nav .nav-btn {
+        padding: 6px 12px;
+        font-size: 0.8rem;
+    }
+
+    .logo {
+        font-size: 1.5rem;
+    }
+
+    /* Grid Layout */
+    .grid-layout {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    /* Featured Video Section */
+    .featured-video-section .featured-content {
+        flex-direction: column !important;
+    }
+
+    .featured-video-section .video-container,
+    .featured-video-section .info-container {
+        flex: 1 !important;
+        min-width: 100% !important;
+    }
+
+    .featured-video-section .info-container {
+        padding: 20px !important;
+    }
+
+    .featured-title {
+        font-size: 1.3rem !important;
+    }
+
+    /* Contact Section */
+    .contact-card {
+        padding: 30px 20px !important;
+    }
+
+    .contact-card h3 {
+        font-size: 1.5rem !important;
+    }
+
+    /* Chapter Cards */
+    .chapter-card {
+        padding: 20px;
+    }
+
+    /* Task List */
+    .task-card {
+        padding: 15px;
+    }
+
+    /* Submission Form */
+    .split-layout {
+        grid-template-columns: 1fr !important;
+    }
+
+    .task-instructions,
+    .submission-form-container {
+        padding: 20px;
+    }
+
+    /* Gallery */
+    .masonry-layout {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* Review Dashboard */
+    .stats-overview {
+        grid-template-columns: 1fr !important;
+        gap: 15px;
+    }
+
+    .split-layout {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* Modal */
+    .modal-content {
+        width: 95%;
+        padding: 15px;
+    }
+}
+
+/* Mobile (600px and below) */
+@media (max-width: 600px) {
+
+    /* Container Padding */
+    .container {
+        padding: 0 15px;
+    }
+
+    /* View Sections */
+    .view-section {
+        padding: 30px 0;
+    }
+
+    /* Section Header */
+    .section-header h2 {
+        font-size: 1.8rem;
+    }
+
+    .section-header p {
+        font-size: 0.9rem;
+    }
+
+    /* Header */
+    .app-header {
+        padding: 15px 0;
+    }
+
+    .logo {
+        font-size: 1.3rem;
+    }
+
+    .logo span {
+        font-size: 0.7rem;
+        padding: 1px 6px;
+    }
+
+    /* Navigation */
+    .main-nav .nav-btn {
+        padding: 5px 10px;
+        font-size: 0.75rem;
+        letter-spacing: 0.5px;
+    }
+
+    /* User Stats */
+    .user-stats {
+        font-size: 0.8rem;
+    }
+
+    .level-badge {
+        font-size: 0.7rem !important;
+        padding: 1px 6px !important;
+    }
+
+    .xp-container {
+        width: 80px !important;
+    }
+
+    /* Featured Video */
+    .featured-video-section {
+        margin-bottom: 30px !important;
+    }
+
+    .featured-title {
+        font-size: 1.2rem !important;
+        margin-bottom: 10px !important;
+    }
+
+    .featured-desc {
+        font-size: 0.9rem !important;
+        margin-bottom: 20px !important;
+    }
+
+    .btn-featured {
+        width: 100%;
+        padding: 12px !important;
+    }
+
+    .highlight-tag {
+        font-size: 0.7rem !important;
+    }
+
+    /* Contact Form */
+    .contact-section {
+        margin-top: 40px !important;
+    }
+
+    .contact-card {
+        padding: 25px 15px !important;
+    }
+
+    .contact-card h3 {
+        font-size: 1.3rem !important;
+    }
+
+    .contact-label {
+        font-size: 0.7rem !important;
+    }
+
+    .contact-form input,
+    .contact-form textarea {
+        font-size: 0.95rem !important;
+        padding: 10px !important;
+    }
+
+    .btn-submit {
+        padding: 10px !important;
+        font-size: 0.95rem !important;
+    }
+
+    /* Social Media Contact */
+    .social-contact {
+        flex-direction: column !important;
+        gap: 10px !important;
+        padding: 12px !important;
+    }
+
+    .social-contact span {
+        font-size: 0.85rem !important;
+    }
+
+    .social-contact a {
+        width: 100%;
+        justify-content: center !important;
+    }
+
+    /* Chapter Cards */
+    .chapter-card h3 {
+        font-size: 1.2rem;
+    }
+
+    .chapter-card p {
+        font-size: 0.9rem;
+    }
+
+    .badge {
+        font-size: 0.7rem;
+        padding: 2px 6px;
+    }
+
+    /* Task Cards */
+    .task-card {
+        padding: 12px;
+    }
+
+    .task-card h4 {
+        font-size: 1rem;
+    }
+
+    /* Buttons */
+    .btn-primary,
+    .btn-secondary {
+        padding: 10px 20px;
+        font-size: 0.9rem;
+    }
+
+    /* Forms */
+    .form-group label {
+        font-size: 0.9rem;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        font-size: 0.95rem;
+        padding: 10px;
+    }
+
+    /* Gallery */
+    .gallery-item {
+        margin-bottom: 15px;
+    }
+
+    .gallery-info {
+        padding: 10px;
+    }
+
+    .gallery-info p {
+        font-size: 0.85rem;
+    }
+
+    /* Review Stats */
+    .stat-card {
+        padding: 15px;
+    }
+
+    .stat-label {
+        font-size: 0.8rem;
+    }
+
+    .stat-value {
+        font-size: 1.8rem;
+    }
+
+    /* Skill Bars */
+    .skill-item label {
+        font-size: 0.85rem;
+    }
+
+    /* Back Link */
+    .back-link {
+        font-size: 0.9rem;
+        margin-bottom: 15px;
+    }
+
+    /* Chapter Info Card */
+    .chapter-info-card {
+        padding: 15px;
+    }
+
+    .chapter-info-card h2 {
+        font-size: 1.3rem;
+    }
+
+    /* Concept Card */
+    .concept-card {
+        padding: 15px;
+    }
+
+    .concept-card h3 {
+        font-size: 1.1rem;
+    }
+
+    /* Instruction Box */
+    .instruction-box {
+        padding: 15px;
+    }
+
+    .instruction-box h3 {
+        font-size: 1.1rem;
+    }
+
+    /* Range Group */
+    .range-group {
+        font-size: 0.85rem;
+    }
+
+    .range-group input[type="range"] {
+        width: 100%;
+    }
+}
+
+/* Extra Small Mobile (400px and below) */
+@media (max-width: 400px) {
+    .logo {
+        font-size: 1.1rem;
+    }
+
+    .main-nav .nav-btn {
+        padding: 4px 8px;
+        font-size: 0.7rem;
+    }
+
+    .section-header h2 {
+        font-size: 1.5rem;
+    }
+
+    .featured-title {
+        font-size: 1.1rem !important;
+    }
+
+    .contact-card h3 {
+        font-size: 1.2rem !important;
+    }
+
+    .stat-value {
+        font-size: 1.5rem;
+    }
+
+    .chapter-card h3 {
+        font-size: 1.1rem;
+    }
+}
+
+/* Landscape Mobile Optimization */
+@media (max-height: 500px) and (orientation: landscape) {
+    .view-section {
+        padding: 20px 0;
+    }
+
+    .app-header {
+        padding: 10px 0;
+    }
+
+    .modal-content {
+        max-height: 90vh;
+        overflow-y: auto;
+    }
+}
+
+/* Print Styles */
+@media print {
+
+    .app-header,
+    .main-nav,
+    .btn-primary,
+    .btn-secondary,
+    .btn-featured,
+    .btn-submit,
+    .contact-section {
+        display: none;
+    }
+
+    body::before {
+        display: none;
+    }
+
+    .view-section {
+        padding: 0;
+    }
+}

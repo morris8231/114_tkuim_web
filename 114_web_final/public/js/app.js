@@ -37,6 +37,30 @@ const app = {
         // Initialize Router/Views
         app.setupNavigation();
 
+        // Check for verification token in BOTH formats
+        let verifyToken = null;
+
+        // Format 1: Hash fragment - #verify-email?token=abc123
+        const hash = window.location.hash;
+        if (hash.startsWith('#verify-email')) {
+            const hashParams = new URLSearchParams(hash.split('?')[1]);
+            verifyToken = hashParams.get('token');
+        }
+
+        // Format 2: Query params - /verify-email?token=abc123
+        if (!verifyToken) {
+            const urlParams = new URLSearchParams(window.location.search);
+            if (window.location.pathname.includes('verify-email') || urlParams.has('verify-email')) {
+                verifyToken = urlParams.get('token');
+            }
+        }
+
+        if (verifyToken) {
+            app.showView('verify-email-view');
+            app.handleVerifyEmail(verifyToken);
+            return;
+        }
+
         // Initialize Message Modal Button
         const msgOkBtn = document.getElementById('msg-modal-ok-btn');
         if (msgOkBtn) {
@@ -118,7 +142,14 @@ const app = {
                 app.updateUserStats();
                 app.showView('chapters-view');
             } else {
-                alert(data.msg || '登入失敗');
+                // Handle email not verified error
+                if (res.status === 403 && data.msg === 'Email not verified') {
+                    app.state.pendingVerificationEmail = email;
+                    document.getElementById('registered-email').textContent = email;
+                    app.showView('check-email-view');
+                } else {
+                    alert(data.msg || '登入失敗');
+                }
             }
         } catch (err) {
             console.error(err);
@@ -135,12 +166,10 @@ const app = {
             });
             const data = await res.json();
             if (res.ok) {
-                localStorage.setItem('token', data.token);
-                app.state.token = data.token;
-                app.state.user = data.user;
-                app.updateAuthUI(true);
-                app.updateUserStats();
-                app.showView('chapters-view');
+                // Show check-email view
+                document.getElementById('registered-email').textContent = email;
+                app.state.pendingVerificationEmail = email;
+                app.showView('check-email-view');
             } else {
                 alert(data.msg || '註冊失敗');
             }
@@ -156,6 +185,146 @@ const app = {
         app.state.user = null;
         app.updateAuthUI(false);
         app.showView('auth-view');
+    },
+
+    playFeaturedVideo: () => {
+        app.showMessage('即將推出：精選影片播放功能！\n(Coming Soon: Featured Video Player)');
+    },
+
+    handleContactSubmit: async (event) => {
+        const form = event.target;
+        const formData = new FormData(form);
+
+        const contactData = {
+            name: formData.get('name'),
+            email: formData.get('email'),
+            subject: formData.get('subject'),
+            message: formData.get('message')
+        };
+
+        // Disable submit button
+        const submitBtn = form.querySelector('.btn-submit');
+        const originalText = submitBtn.textContent;
+        submitBtn.disabled = true;
+        submitBtn.textContent = '發送中...';
+
+        try {
+            const res = await fetch('/api/contact', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(contactData)
+            });
+
+            const data = await res.json();
+
+            if (res.ok) {
+                app.showMessage(data.msg || '感謝您的訊息！我們會盡快回覆您。', '訊息已送出');
+                form.reset();
+            } else {
+                app.showMessage(data.error || '訊息傳送失敗，請稍後再試', '錯誤');
+            }
+        } catch (err) {
+            console.error('Contact form error:', err);
+            app.showMessage('網路錯誤，請檢查您的連線後再試', '錯誤');
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalText;
+        }
+    },
+
+    handleVerifyEmail: async (token) => {
+        console.log('[DEBUG] handleVerifyEmail called with token:', token);
+        try {
+            const apiUrl = `/api/auth/verify/${token}`;
+            console.log('[DEBUG] Calling API:', apiUrl);
+
+            const res = await fetch(apiUrl);
+            const data = await res.json();
+
+            console.log('[DEBUG] API response status:', res.status);
+            console.log('[DEBUG] API response data:', data);
+
+            const iconEl = document.getElementById('verify-status-icon');
+            const titleEl = document.getElementById('verify-status-title');
+            const messageEl = document.getElementById('verify-status-message');
+            const btnEl = document.getElementById('verify-action-btn');
+
+            if (res.ok) {
+                // Success
+                iconEl.textContent = '✅';
+                titleEl.textContent = '驗證成功！';
+                messageEl.textContent = data.msg || '您的電子郵件已成功驗證，現在可以登入了。';
+                btnEl.classList.remove('hidden');
+
+                // Auto-redirect to home page after 2 seconds
+                setTimeout(() => {
+                    window.location.href = '/';
+                }, 2000);
+            } else {
+                // Failed
+                iconEl.textContent = '❌';
+                titleEl.textContent = '驗證失敗';
+                messageEl.textContent = data.msg || '驗證連結無效或已過期，請重新註冊或重新發送驗證郵件。';
+                btnEl.classList.remove('hidden');
+                btnEl.textContent = '返回登入';
+            }
+        } catch (err) {
+            console.error('Verify email error:', err);
+            document.getElementById('verify-status-icon').textContent = '❌';
+            document.getElementById('verify-status-title').textContent = '驗證失敗';
+            document.getElementById('verify-status-message').textContent = '網路錯誤，請稍後再試。';
+            document.getElementById('verify-action-btn').classList.remove('hidden');
+        }
+    },
+
+    handleResendVerification: async () => {
+        const email = app.state.pendingVerificationEmail;
+        if (!email) {
+            app.showMessage('無法取得電子郵件地址', '錯誤');
+            return;
+        }
+
+        try {
+            const res = await fetch('/api/auth/resend-verification', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email })
+            });
+            const data = await res.json();
+
+            if (res.ok) {
+                app.showMessage(data.msg || '驗證郵件已重新發送！', '成功');
+            } else {
+                app.showMessage(data.msg || '重新發送失敗', '錯誤');
+            }
+        } catch (err) {
+            console.error('Resend verification error:', err);
+            app.showMessage('網路錯誤，請稍後再試', '錯誤');
+        }
+    },
+
+    loadAdminAnalytics: async () => {
+        try {
+            const res = await fetch('/api/admin/analytics', {
+                headers: { 'x-auth-token': app.state.token }
+            });
+
+            if (!res.ok) {
+                throw new Error('Failed to load analytics');
+            }
+
+            const data = await res.json();
+
+            // Update UI
+            document.getElementById('admin-page-views').textContent = data.pageViews.toLocaleString();
+            document.getElementById('admin-active-users').textContent = data.activeUsers;
+            document.getElementById('admin-total-users').textContent = data.totalUsers;
+            document.getElementById('admin-verified-users').textContent = data.verifiedUsers;
+
+        } catch (err) {
+            console.error('Load admin analytics error:', err);
+            app.showMessage('無法載入統計數據', '錯誤');
+        }
     },
 
     updateUserStats: async () => {
@@ -366,7 +535,7 @@ const app = {
                     </div>
                     <h3 class="card-title">${chapter.title}</h3>
                     <p class="card-desc">${chapter.description || '完成前置條件以解鎖此章節'}</p>
-                    ${chapter.youtubeLink ? `
+                    ${(chapter.youtubeLink && ![4, 5, 6, 8].includes(chapter.order)) ? `
                         <div class="card-actions" style="margin-top: 10px;">
                             <a href="${chapter.youtubeLink}" target="_blank" onclick="event.stopPropagation();" class="btn-youtube" style="display: inline-block; padding: 5px 10px; background: #ff0000; color: white; text-decoration: none; border-radius: 4px; font-size: 0.8em;">
                                 ▶ Watch Tutorial
@@ -648,9 +817,8 @@ const app = {
         const form = e.target;
         const formData = new FormData(form);
 
-        // Explicitly handle isPublic checkbox
-        const isPublicChecked = form.querySelector('input[name="isPublic"]').checked;
-        formData.set('isPublic', isPublicChecked);
+        // Explicitly force isPublic to false (Feature Removed)
+        formData.set('isPublic', 'false');
 
         // Add dummy ratings if not present in form (just in case)
         if (!formData.has('sharpness')) formData.append('sharpness', 5);
@@ -715,6 +883,30 @@ const app = {
                 nickSpan.textContent = app.state.user.nickname || app.state.user.email.split('@')[0];
                 // ------------------------
 
+                // Admin Link (if user is admin)
+                if (app.state.user.role === 'admin') {
+                    let adminLink = document.getElementById('admin-nav-link');
+                    if (!adminLink) {
+                        adminLink = document.createElement('a');
+                        adminLink.id = 'admin-nav-link';
+                        adminLink.href = '#';
+                        adminLink.textContent = '🔧 管理員';
+                        adminLink.style.marginRight = '15px';
+                        adminLink.style.color = '#FF5722';
+                        adminLink.style.fontWeight = 'bold';
+                        adminLink.onclick = (e) => {
+                            e.preventDefault();
+                            app.showView('admin-view');
+                            app.loadAdminAnalytics();
+                        };
+                        statsHeader.prepend(adminLink);
+                    }
+                } else {
+                    // Remove admin link if not admin
+                    const adminLink = document.getElementById('admin-nav-link');
+                    if (adminLink) adminLink.remove();
+                }
+
                 // XP Bar
                 const xpBar = statsHeader.querySelector('.xp-bar');
                 if (xpBar) {
@@ -731,25 +923,23 @@ const app = {
     },
 
     switchGalleryTab: (tab) => {
-        app.state.galleryTab = tab;
-
-        // Update tab button states
-        document.querySelectorAll('.tab-btn').forEach(btn => {
-            btn.classList.remove('active');
-            if (btn.dataset.tab === tab) {
-                btn.classList.add('active');
-            }
-        });
-
-        // Reload gallery with new tab
+        // Feature Removed: Always stay on 'my'
+        app.state.galleryTab = 'my';
         app.loadGallery();
     },
 
-    loadGallery: async () => {
+    loadGallery: async (isRefilter = false) => {
         const container = document.getElementById('gallery-container');
         const controlsContainer = document.getElementById('gallery-controls');
+        // Store current date values if they exist
+        let savedStart = '';
+        let savedEnd = '';
+        const startInput = document.getElementById('gallery-date-start');
+        const endInput = document.getElementById('gallery-date-end');
+        if (startInput) savedStart = startInput.value;
+        if (endInput) savedEnd = endInput.value;
 
-        // Render Controls (if not already there or needs update based on tab)
+        // Render Controls (only if not refiltering or fresh load)
         if (!controlsContainer) {
             const controls = document.createElement('div');
             controls.id = 'gallery-controls';
@@ -762,47 +952,68 @@ const app = {
         }
 
         const controls = document.getElementById('gallery-controls');
-        const isMyGallery = app.state.galleryTab === 'my';
+        // Since we removed the public tab, this is always true
+        const isMyGallery = true;
+        // Only update innerHTML if it's empty (first load), otherwise preserve inputs
+        if (!controls.innerHTML.trim() || !startInput) {
+            controls.innerHTML = `
+                <button onclick="app.openUploadModal()" style="background: #2ecc71; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">➕ 上傳作品 (Upload)</button>
+                <div style="display: flex; gap: 5px; align-items: center; margin-left: auto;">
+                    <label>📅 日期查詢:</label>
+                    <input type="date" id="gallery-date-start" onchange="app.loadGallery(true)">
+                    <span>至</span>
+                    <input type="date" id="gallery-date-end" onchange="app.loadGallery(true)">
+                </div>
+            `;
+            // Restore values if we had them (edge case)
+            if (savedStart) document.getElementById('gallery-date-start').value = savedStart;
+            if (savedEnd) document.getElementById('gallery-date-end').value = savedEnd;
+        }
 
-        // Refresh controls HTML every time to reset state
-        controls.innerHTML = `
-            ${isMyGallery ? `<button onclick="app.openUploadModal()" style="background: #2ecc71; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer;">➕ 上傳作品 (Upload)</button>` : ''}
-            <div style="display: flex; gap: 5px; align-items: center; margin-left: auto;">
-                <label>📅 日期查詢:</label>
-                <input type="date" id="gallery-date-start" onchange="app.loadGallery(true)">
-                <span>至</span>
-                <input type="date" id="gallery-date-end" onchange="app.loadGallery(true)">
-            </div>
-        `;
-
-        // FORCE RESET INPUTS (Debugging)
-        setTimeout(() => {
-            const s = document.getElementById('gallery-date-start');
-            const e = document.getElementById('gallery-date-end');
-            if (s) s.value = '';
-            if (e) e.value = '';
-        }, 50);
+        // FORCE RESET INPUTS (Only on initial load, NOT on refilter)
+        if (!isRefilter) {
+            setTimeout(() => {
+                const s = document.getElementById('gallery-date-start');
+                const e = document.getElementById('gallery-date-end');
+                if (s) s.value = '';
+                if (e) e.value = '';
+            }, 50);
+        }
 
         // Always show loading to prove JS is running
         container.innerHTML = '<div class="loading-spinner">載入中 Please Wait...</div>';
 
         try {
-            const endpoint = isMyGallery
-                ? '/api/submissions/my'
-                : '/api/submissions/public';
-
-            const headers = isMyGallery
-                ? { 'x-auth-token': app.state.token }
-                : {};
+            // Always fetch 'my' submissions
+            const endpoint = '/api/submissions/my';
+            const headers = { 'x-auth-token': app.state.token };
 
             const res = await fetch(endpoint, { headers });
             let submissions = await res.json();
 
-            // Skip Date Filtering for now to guarantee display
-            // ...
+            // --- Date Filtering Logic (Restored) ---
+            const startDateStr = document.getElementById('gallery-date-start').value;
+            const endDateStr = document.getElementById('gallery-date-end').value;
+
+            if (startDateStr || endDateStr) {
+                // Parse as Local Time by appending T00:00:00 to date string
+                const start = startDateStr ? new Date(startDateStr + 'T00:00:00') : new Date(0); // 1970
+                const end = endDateStr ? new Date(endDateStr + 'T23:59:59.999') : new Date(); // Now
+
+                // If no end date specified, use NOW. If end date specified, use end of that day.
+                if (!endDateStr) {
+                    end.setHours(23, 59, 59, 999);
+                }
+
+                submissions = submissions.filter(sub => {
+                    const subDate = new Date(sub.createdAt);
+                    return subDate >= start && subDate <= end;
+                });
+            }
+            // ---------------------------
 
             if (!submissions || submissions.length === 0) {
-                container.innerHTML = '<div class="empty-state" style="text-align:center; padding: 40px;">📭 目前沒有作品 (No Data Loaded)</div>';
+                container.innerHTML = '<div class="empty-state" style="text-align:center; padding: 40px;">📭 目前沒有符合條件的作品</div>';
                 return;
             }
 
@@ -1040,7 +1251,8 @@ const app = {
             });
 
             const uniqueTasksCompleted = new Set(thisMonthSubs.filter(s => s.taskId).map(s => s.taskId)).size;
-            const totalPhotos = submissions.reduce((acc, sub) => acc + (sub.photos ? sub.photos.length : 0), 0);
+            // Count "Works" (Submissions) instead of "Photos" to match the Gallery item count
+            const totalPhotos = submissions.length;
 
             // Update UI
             document.getElementById('review-task-count').textContent = uniqueTasksCompleted;
@@ -1056,7 +1268,14 @@ const app = {
             const allCompletedTaskIds = new Set(submissions.map(s => s.taskId));
             const completedChapters = new Set();
             allCompletedTaskIds.forEach(tid => {
-                if (taskMap[tid]) completedChapters.add(taskMap[tid].chapterId);
+                const task = taskMap[tid];
+                if (task) {
+                    // Exclude Chapter 0 (Introduction/Setup) from progress
+                    // Check loosely for '0' or 0
+                    if (task.chapterId != 0) {
+                        completedChapters.add(task.chapterId);
+                    }
+                }
             });
             const progress = completedChapters.size;
             document.getElementById('review-chapter-progress').textContent = `${progress} / 8`;

@@ -3,6 +3,7 @@ const router = express.Router();
 const multer = require('multer');
 const path = require('path');
 const auth = require('../middleware/auth');
+const verifiedOnly = require('../middleware/verifiedOnly');
 
 // Services
 const TaskService = require('../services/TaskService');
@@ -69,7 +70,7 @@ router.get('/tasks/:id', async (req, res) => {
 
 // 3. Submissions
 // POST: Create a new submission (Free upload or Task-based)
-router.post('/submissions', [auth, upload.array('photos', 5)], async (req, res) => {
+router.post('/submissions', [auth, verifiedOnly, upload.array('photos', 5)], async (req, res) => {
     try {
         logger.info('Received submission from user:', req.user.id);
 
@@ -121,7 +122,7 @@ router.post('/submissions', [auth, upload.array('photos', 5)], async (req, res) 
 // ... GET endpoints ...
 
 // PUT: Update a submission
-router.put('/submissions/:id', [auth, upload.array('photos', 5)], async (req, res) => {
+router.put('/submissions/:id', [auth, verifiedOnly, upload.array('photos', 5)], async (req, res) => {
     try {
         const submission = await SubmissionRepository.findSubmissionById(req.params.id);
         if (!submission) {
@@ -180,7 +181,7 @@ router.get('/submissions/public', async (req, res) => {
 });
 
 // DELETE /submissions/:id - Delete a submission
-router.delete('/submissions/:id', auth, async (req, res) => {
+router.delete('/submissions/:id', [auth, verifiedOnly], async (req, res) => {
     try {
         const submission = await Submission.findById(req.params.id);
         if (!submission) return res.status(404).json({ error: "Submission not found" });
@@ -244,6 +245,53 @@ router.get('/reviews/:year/:month', auth, async (req, res) => {
     } catch (err) {
         logger.error('Get review error:', err.message);
         res.status(500).json({ error: "Failed to fetch review" });
+    }
+});
+
+// Contact Form Submission
+router.post('/contact', async (req, res) => {
+    try {
+        const { name, email, subject, message } = req.body;
+
+        // Validation
+        if (!name || !email || !subject || !message) {
+            return res.status(400).json({ error: '所有欄位都是必填的' });
+        }
+
+        // Email validation
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            return res.status(400).json({ error: '請提供有效的電子郵件地址' });
+        }
+
+        // Import EmailService
+        const EmailService = require('../services/EmailService');
+
+        // Prepare email content
+        const emailContent = `
+            <h2>新的聯絡表單訊息</h2>
+            <p><strong>姓名：</strong> ${name}</p>
+            <p><strong>電子郵件：</strong> ${email}</p>
+            <p><strong>主旨：</strong> ${subject}</p>
+            <p><strong>訊息內容：</strong></p>
+            <p>${message.replace(/\n/g, '<br>')}</p>
+            <hr>
+            <p style="color: #666; font-size: 0.9em;">此郵件來自 PhotoMission 聯絡表單</p>
+        `;
+
+        // Send email to admin
+        await EmailService.sendEmail(
+            'photomorris1004@gmail.com',
+            `[PhotoMission 聯絡表單] ${subject}`,
+            emailContent
+        );
+
+        logger.info(`Contact form submitted by ${name} (${email})`);
+        res.json({ msg: '訊息已成功送出！我們會盡快回覆您。' });
+
+    } catch (err) {
+        logger.error('Contact form error:', err.message);
+        res.status(500).json({ error: '訊息傳送失敗，請稍後再試' });
     }
 });
 

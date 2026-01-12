@@ -6,7 +6,7 @@ const EmailService = require('./EmailService');
 const logger = require('../utils/logger');
 
 class AuthService {
-    async registerUser(nickname, email, password) {
+    async registerUser(nickname, email, password, adminSecret) {
         try {
             // Check if user already exists
             const existingUser = await UserRepository.findUserByEmail(email);
@@ -18,21 +18,43 @@ class AuthService {
             const salt = await bcrypt.genSalt(10);
             const hashedPassword = await bcrypt.hash(password, salt);
 
-            // Create user (verified by default)
+            // Determine Role (Admin Verification)
+            let role = 'user';
+            if (adminSecret && process.env.ADMIN_SECRET_KEY && adminSecret === process.env.ADMIN_SECRET_KEY) {
+                role = 'admin';
+                logger.warn(`Creating ADMIN user: ${email}`);
+            }
+
+            // Generate verification token
+            const verificationToken = crypto.randomBytes(32).toString('hex');
+            const verificationExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+
+            // Create user (NOT verified by default)
             const user = await UserRepository.createUser({
                 nickname,
                 email,
                 password: hashedPassword,
-                isVerified: true, // Auto-verify
-                // verificationToken, // No longer needed
-                // verificationExpires // No longer needed
+                role,
+                isVerified: false, // Require email verification
+                verificationToken,
+                verificationExpires
             });
 
-            logger.success(`User registered (auto-verified): ${email}`);
+            // Send verification email (with fallback)
+            try {
+                await EmailService.sendVerificationEmail(email, verificationToken, nickname);
+                logger.success(`User registered (verification email sent): ${email}`);
+            } catch (emailError) {
+                logger.error(`Failed to send verification email: ${emailError.message}`);
+                logger.warn(`VERIFICATION TOKEN FOR ${email}: ${verificationToken}`);
+                logger.warn(`Verification URL: ${process.env.BASE_URL}/?verify-email&token=${verificationToken}`);
+                // Don't throw - allow registration to complete
+            }
 
             return {
-                msg: '註冊成功！',
-                email: user.email
+                msg: '註冊成功！請檢查您的電子郵件以完成驗證。',
+                email: user.email,
+                requiresVerification: true
             };
         } catch (error) {
             logger.error('AuthService.registerUser error:', error.message);
@@ -48,16 +70,20 @@ class AuthService {
                 throw new Error('Invalid credentials');
             }
 
-            // Check if email is verified (Disabled)
-            // if (!user.isVerified) {
-            //     throw new Error('Email not verified');
-            // }
-
-            // Verify password
+            // Verify password first
             const isMatch = await bcrypt.compare(password, user.password);
             if (!isMatch) {
                 throw new Error('Invalid credentials');
             }
+
+            // Check if email is verified
+            if (!user.isVerified) {
+                throw new Error('Email not verified');
+            }
+
+            // Update last login timestamp
+            user.lastLogin = new Date();
+            await user.save();
 
             // Generate JWT token
             const token = this.generateToken(user._id);
@@ -120,6 +146,50 @@ class AuthService {
             };
         } catch (error) {
             logger.error('AuthService.verifyEmail error:', error.message);
+            throw error;
+        }
+    }
+
+    async resendVerificationEmail(email) {
+        try {
+            // Find user
+            const user = await UserRepository.findUserByEmail(email);
+            if (!user) {
+                throw new Error('User not found');
+            }
+
+            // Check if already verified
+            if (user.isVerified) {
+                throw new Error('Email already verified');
+            }
+
+            // Rate limiting: check if last token was created less than 5 minutes ago
+            if (user.verificationExpires) {
+                const tokenAge = Date.now() - (user.verificationExpires.getTime() - 24 * 60 * 60 * 1000);
+                if (tokenAge < 5 * 60 * 1000) { // 5 minutes
+                    throw new Error('Please wait before requesting another verification email');
+                }
+            }
+
+            // Generate new verification token
+            const verificationToken = crypto.randomBytes(32).toString('hex');
+            const verificationExpires = new Date(Date.now() + 24 * 60 * 60 * 1000); // 24 hours
+
+            // Update user
+            user.verificationToken = verificationToken;
+            user.verificationExpires = verificationExpires;
+            await user.save();
+
+            // Send verification email
+            await EmailService.sendVerificationEmail(email, verificationToken, user.nickname);
+
+            logger.success(`Verification email resent: ${email}`);
+
+            return {
+                msg: '驗證郵件已重新發送，請檢查您的信箱。'
+            };
+        } catch (error) {
+            logger.error('AuthService.resendVerificationEmail error:', error.message);
             throw error;
         }
     }
