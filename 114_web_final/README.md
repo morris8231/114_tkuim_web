@@ -1,105 +1,399 @@
-# Photography Chapter-based Task Learning System (攝影章節式任務學習系統)
+# PhotoMission - 攝影任務學習系統
 
-## Project Overview
-This project is a web-based learning platform integrated with **Gamification** to help users verify photography skills.
-Users complete tasks by taking photos, uploading them for review, earning XP, and leveling up.
+一個基於章節的攝影學習平台，結合任務系統、作品提交、經驗值成長機制，以及完整的用戶管理和管理員分析功能。
 
-### Core Features
-1.  **Chapter-based Learning**: Structured path from "Exposure" to "Mastery".
-2.  **Gamification**: Earn XP, Level Up, and unlock badges.
-3.  **Community Gallery**: Share works and learn from others.
-4.  **Full CRUD**: Create, Read, Update, and Delete submissions.
-
-## Tech Stack
-*   **Frontend**: Vanilla JavaScript (Component-based architecture), HTML5, CSS3
-*   **Backend**: Node.js, Express.js
-*   **Database**: MongoDB (Atlas or Local)
-*   **Authentication**: JWT (JSON Web Tokens), bcryptjs
-*   **Tools**: Git, VS Code
-
-## Installation & Setup
-
-1.  **Clone the Repository**
-    ```bash
-    git clone <repository_url>
-    cd 114_web_final
-    ```
-
-2.  **Install Dependencies**
-    ```bash
-    npm install
-    ```
-
-3.  **Environment Configuration**
-    Create a `.env` file in the root directory:
-    ```env
-    PORT=3001
-    MONGODB_URI=mongodb://localhost:27017/photo_learning
-    JWT_SECRET=your_jwt_secret
-    UPLOAD_DIR=uploads/
-    ```
-
-4.  **Run the Server**
-    ```bash
-    # Development Mode
-    npm run dev
-    ```
-
-5.  **Access the App**
-    Open [http://localhost:3001](http://localhost:3001) in your browser.
-
-## System Architecture
-
-### Frontend
-*   `public/index.html`: Single Page Application (SPA) entry point.
-*   `public/js/app.js`: Handles Routing, API calls, and State Management.
-*   `public/css/style.css`: Responsive design.
-
-### Backend
-*   `server.js`: Entry point, Middleware setup.
-*   `routes/auth.js`: Authentication endpoints.
-*   `routes/api.js`: CRUD endpoints for Tasks and Submissions.
-*   `models/`: Mongoose schemas (`User`, `Submission`).
-
-## Design Patterns & Architecture
-
-本專案採用多種設計模式來提升程式碼品質與可維護性：
-
-### Backend Design Patterns
-*   **Repository Pattern**: 封裝資料庫操作邏輯
-*   **Service Pattern**: 集中業務邏輯處理
-*   **Singleton Pattern**: 確保資源單一實例（DB 連線、Logger）
-
-### Frontend Design Patterns
-*   **Observer Pattern**: 實作事件中心，處理狀態變化的 UI 更新
-*   **Factory Pattern**: 動態產生不同類型的任務卡與圖表元件
-
-### Authentication & Authorization
-*   JWT Token 認證機制
-*   bcrypt 密碼加密
-*   Role-based 權限控管（user / admin）
-
-詳細設計模式應用與 API 規格請參考：[DESIGN_SPEC.md](DESIGN_SPEC.md)
-
-## CRUD Operations Flow
-
-*   **Create**: User captures photo -> Fills form -> Frontend sends `POST /api/submissions` -> Backend saves to MongoDB & updates XP.
-*   **Read**: User views Gallery -> Frontend calls `GET /api/submissions` -> Backend queries MongoDB -> UI Renders cards.
-*   **Update**: User clicks "Edit" -> Frontend calls `PUT /api/submissions/:id` -> Backend updates text -> UI Refreshes.
-*   **Delete**: User clicks "Delete" -> Frontend calls `DELETE /api/submissions/:id` -> Backend removes doc -> UI Refreshes.
-
-## API Specification
-See [docs/api-spec.md](docs/api-spec.md) for full details.
-
-## License
-MIT
+![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)
+![Node](https://img.shields.io/badge/node-%3E%3D14.0.0-green.svg)
+![License](https://img.shields.io/badge/license-ISC-orange.svg)
 
 ---
 
-## 課程筆記 (Course Notes)
+## 📋 目錄
 
-### 0916
-- 完成Github 倉庫建立
-- 嘗試git clone 專案
-- 嘗試推送檔案
-- 加入test.html
+- [功能特色](#功能特色)
+- [技術架構](#技術架構)
+- [系統需求](#系統需求)
+- [安裝步驟](#安裝步驟)
+- [環境設定](#環境設定)
+- [啟動專案](#啟動專案)
+- [專案結構](#專案結構)
+- [API 文件](#api-文件)
+- [管理員功能](#管理員功能)
+- [常見問題](#常見問題)
+
+---
+
+## ✨ 功能特色
+
+### 🎓 學習系統
+- **8 個攝影章節**：從基礎到進階的完整攝影課程
+- **任務系統**：每個章節包含多個實作任務
+- **YouTube 教學影片**：整合線上教學資源
+- **進度追蹤**：自動記錄學習進度和完成狀態
+
+### 📸 作品管理
+- **照片上傳**：支援多張照片上傳（最多 5 張）
+- **作品展示**：個人作品集和公開畫廊
+- **CRUD 操作**：完整的新增、查看、編輯、刪除功能
+- **每月回顧**：按月份整理作品集
+
+### 👤 用戶系統
+- **Email 驗證**：註冊後需驗證 Email 才能使用
+- **JWT 認證**：安全的 Token-based 身份驗證
+- **個人資料**：暱稱、Email、設備類型設定
+- **經驗值系統**：完成任務獲得 XP 和等級提升
+
+### 🔧 管理員功能
+- **分析儀表板**：即時統計數據
+  - 網站點擊次數（追蹤所有用戶互動）
+  - 活躍帳戶數（30 天內登入）
+  - 總註冊用戶數
+  - 已驗證用戶數
+- **獨立管理頁面**：`/admin.html`
+- **自動刷新**：每 30 秒更新數據
+
+### 📧 Email 功能
+- **驗證郵件**：註冊後自動發送
+- **重發驗證**：支援重新發送驗證郵件（5 分鐘冷卻）
+- **聯絡表單**：用戶可透過表單聯繫管理員
+
+---
+
+## 🛠 技術架構
+
+### 後端
+- **Node.js** + **Express.js** - Web 框架
+- **MongoDB** + **Mongoose** - 資料庫
+- **JWT** - 身份驗證
+- **bcryptjs** - 密碼加密
+- **Multer** - 檔案上傳
+- **Nodemailer** - Email 發送
+
+### 前端
+- **Vanilla JavaScript** - 無框架，純 JS
+- **SPA 架構** - 單頁應用程式
+- **Responsive Design** - 響應式設計
+- **Modern CSS** - 現代化樣式
+
+### 安全性
+- **JWT Token** 認證
+- **密碼 Hash** (bcrypt)
+- **Email 驗證** 機制
+- **Role-based Access Control** (RBAC)
+- **Middleware 保護** 敏感路由
+
+---
+
+## 💻 系統需求
+
+- **Node.js**: >= 14.0.0
+- **MongoDB**: >= 4.4
+- **npm**: >= 6.0.0
+- **Gmail 帳號**：用於發送驗證郵件（需要 App Password）
+
+---
+
+## 📦 安裝步驟
+
+### 1. Clone 專案
+
+```bash
+git clone <repository-url>
+cd 114_web_final
+```
+
+### 2. 安裝依賴套件
+
+```bash
+npm install
+```
+
+### 3. 設定環境變數
+
+複製 `.env.example` 並重新命名為 `.env`：
+
+```bash
+cp .env.example .env
+```
+
+編輯 `.env` 檔案，填入以下資訊：
+
+```env
+# MongoDB Connection
+MONGO_URI=mongodb://localhost:27017/photomission
+
+# JWT Secret (請使用強密碼)
+JWT_SECRET=your_super_secret_jwt_key_here
+
+# Admin Secret (用於建立管理員)
+ADMIN_SECRET_KEY=your_admin_secret_key_here
+
+# Email Configuration (Gmail)
+EMAIL_USER=your-email@gmail.com
+EMAIL_PASS=your-gmail-app-password
+EMAIL_FROM=PhotoMission <noreply@photomission.com>
+
+# Server Configuration
+PORT=3001
+BASE_URL=http://localhost:3001
+```
+
+### 4. 設定 Gmail App Password
+
+1. 前往 [Google Account Security](https://myaccount.google.com/security)
+2. 啟用「兩步驟驗證」
+3. 前往 [App Passwords](https://myaccount.google.com/apppasswords)
+4. 選擇「郵件」和「其他（自訂名稱）」
+5. 產生密碼並複製到 `.env` 的 `EMAIL_PASS`
+
+### 5. 初始化資料庫
+
+```bash
+npm run init-db
+```
+
+這會建立：
+- 8 個攝影章節
+- 每個章節的任務
+- 範例資料
+
+### 6. 建立管理員帳號
+
+```bash
+node promote_admin.js <your-email@example.com>
+```
+
+---
+
+## 🚀 啟動專案
+
+### 開發模式（自動重啟）
+
+```bash
+npm run dev
+```
+
+### 正式模式
+
+```bash
+npm start
+```
+
+伺服器會在 `http://localhost:3001` 啟動
+
+---
+
+## 📁 專案結構
+
+```
+114_web_final/
+├── config/
+│   └── db.js                 # MongoDB 連線設定
+├── middleware/
+│   ├── auth.js              # JWT 認證 middleware
+│   ├── admin.js             # 管理員權限檢查
+│   ├── verifiedOnly.js      # Email 驗證檢查
+│   └── pageViewTracker.js   # 頁面瀏覽追蹤
+├── models/
+│   ├── User.js              # 用戶模型
+│   ├── Chapter.js           # 章節模型
+│   ├── Task.js              # 任務模型
+│   ├── Submission.js        # 作品提交模型
+│   ├── Contact.js           # 聯絡表單模型
+│   └── Analytics.js         # 分析數據模型
+├── routes/
+│   ├── auth.js              # 認證路由 (註冊/登入/驗證)
+│   ├── api.js               # 主要 API 路由
+│   └── admin.js             # 管理員路由
+├── services/
+│   ├── AuthService.js       # 認證服務
+│   ├── ChapterService.js    # 章節服務
+│   ├── TaskService.js       # 任務服務
+│   ├── SubmissionService.js # 作品服務
+│   └── EmailService.js      # Email 服務
+├── repositories/
+│   ├── UserRepository.js    # 用戶資料存取
+│   ├── ChapterRepository.js # 章節資料存取
+│   ├── TaskRepository.js    # 任務資料存取
+│   └── SubmissionRepository.js # 作品資料存取
+├── public/
+│   ├── index.html           # 主頁面
+│   ├── admin.html           # 管理員儀表板
+│   ├── css/
+│   │   └── styles.css       # 樣式表
+│   └── js/
+│       ├── app.js           # 主要前端邏輯
+│       ├── eventBus.js      # 事件總線
+│       └── componentFactory.js # 元件工廠
+├── scripts/
+│   ├── seed.js              # 資料庫初始化腳本
+│   └── verify-existing-users.js # 用戶驗證腳本
+├── uploads/                 # 上傳檔案目錄
+├── .env                     # 環境變數（不納入版控）
+├── .env.example             # 環境變數範例
+├── server.js                # 伺服器入口
+└── package.json             # 專案設定
+```
+
+---
+
+## 🔌 API 文件
+
+### 認證相關
+
+| Method | Endpoint | 說明 | 權限 |
+|--------|----------|------|------|
+| POST | `/api/auth/register` | 註冊新用戶 | Public |
+| POST | `/api/auth/login` | 用戶登入 | Public |
+| GET | `/api/auth/verify/:token` | Email 驗證 | Public |
+| POST | `/api/auth/resend-verification` | 重發驗證郵件 | Public |
+| GET | `/api/auth/me` | 取得當前用戶資料 | Private |
+
+### 章節與任務
+
+| Method | Endpoint | 說明 | 權限 |
+|--------|----------|------|------|
+| GET | `/api/chapters` | 取得所有章節 | Public |
+| GET | `/api/chapters/:id` | 取得單一章節 | Public |
+| GET | `/api/chapters/:id/tasks` | 取得章節任務 | Public |
+
+### 作品管理
+
+| Method | Endpoint | 說明 | 權限 |
+|--------|----------|------|------|
+| POST | `/api/submissions` | 提交作品 | Private + Verified |
+| GET | `/api/submissions` | 取得所有作品 | Public |
+| GET | `/api/submissions/user/:userId` | 取得用戶作品 | Public |
+| PUT | `/api/submissions/:id` | 更新作品 | Private + Verified |
+| DELETE | `/api/submissions/:id` | 刪除作品 | Private + Verified |
+
+### 管理員
+
+| Method | Endpoint | 說明 | 權限 |
+|--------|----------|------|------|
+| GET | `/api/admin/analytics` | 取得分析數據 | Admin |
+| POST | `/api/analytics/click` | 記錄點擊事件 | Public |
+
+---
+
+## 🔐 管理員功能
+
+### 訪問管理員儀表板
+
+1. **建立管理員帳號**：
+   ```bash
+   node promote_admin.js <your-email>
+   ```
+
+2. **登入系統**
+
+3. **訪問儀表板**：
+   - 方式 1：點擊頁面頂部的「🔧 管理員」連結
+   - 方式 2：直接訪問 `http://localhost:3001/admin.html`
+
+### 儀表板功能
+
+- **網站點擊次數**：追蹤所有用戶點擊互動
+- **活躍帳戶**：30 天內登入的已驗證用戶
+- **總註冊用戶**：所有註冊用戶數量
+- **已驗證用戶**：Email 已驗證的用戶數
+
+---
+
+## ❓ 常見問題
+
+### Q: 無法發送驗證郵件？
+
+**A**: 請確認：
+1. Gmail App Password 是否正確設定
+2. `.env` 中的 `EMAIL_USER` 和 `EMAIL_PASS` 是否正確
+3. Gmail 帳號是否啟用「兩步驟驗證」
+4. 執行 `node test_email.js` 測試郵件功能
+
+### Q: 章節頁面顯示「載入中...」？
+
+**A**: 請嘗試：
+1. 強制重新整理瀏覽器（Cmd+Shift+R）
+2. 確認不在驗證頁面（URL 不含 `verify-email`）
+3. 點擊「學習章節」或「PhotoMission」logo 返回首頁
+4. 檢查瀏覽器 Console 是否有錯誤
+
+### Q: 如何重置資料庫？
+
+**A**: 
+```bash
+# 刪除資料庫
+mongo photomission --eval "db.dropDatabase()"
+
+# 重新初始化
+npm run init-db
+```
+
+### Q: 忘記管理員密碼？
+
+**A**:
+```bash
+# 重新設定為管理員
+node promote_admin.js <your-email>
+```
+
+### Q: 上傳的照片儲存在哪裡？
+
+**A**: 照片儲存在 `uploads/` 目錄中，檔名格式為 `{timestamp}-{originalname}`
+
+---
+
+## 📝 開發指令
+
+```bash
+# 安裝依賴
+npm install
+
+# 啟動開發伺服器（自動重啟）
+npm run dev
+
+# 啟動正式伺服器
+npm start
+
+# 初始化資料庫
+npm run init-db
+
+# 建立管理員
+node promote_admin.js <email>
+
+# 檢查用戶進度
+node check_user_progress.js <email>
+
+# 測試郵件功能
+node test_email.js
+```
+
+---
+
+## 🤝 貢獻
+
+歡迎提交 Issue 和 Pull Request！
+
+---
+
+## 📄 授權
+
+ISC License
+
+---
+
+## 👨‍💻 作者
+
+**Antigravity Team**
+
+---
+
+## 🙏 致謝
+
+- Express.js 團隊
+- MongoDB 團隊
+- 所有開源貢獻者
+
+---
+
+**享受您的攝影學習之旅！📸**
