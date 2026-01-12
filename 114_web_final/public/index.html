@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>攝影章節式任務學習系統</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&family=Outfit:wght@300;400;600&display=swap"
+        rel="stylesheet">
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <header class="app-header">
+        <div class="container">
+            <h1 class="logo" onclick="app.showView('chapters-view')" style="cursor: pointer;" title="Back to Home">
+                PhotoMission <span>Beta</span></h1>
+            <nav class="main-nav" id="main-nav">
+                <button class="nav-btn active" data-target="chapters-view">學習章節</button>
+                <button class="nav-btn" data-target="gallery-view">我的作品</button>
+                <button class="nav-btn" data-target="review-view">每月回顧</button>
+                <button class="nav-btn" id="login-btn" data-target="auth-view">登入</button>
+                <button class="nav-btn hidden" id="logout-btn" onclick="app.logout()">登出</button>
+            </nav>
+            <div class="user-stats hidden" id="user-stats-header"
+                style="display: flex; align-items: center; gap: 10px;">
+                <!-- Injected via JS -->
+                <span class="level-badge"
+                    style="background: #000; color: #fff; padding: 2px 8px; font-weight: bold; font-size: 0.8rem;">LV.1</span>
+                <div class="xp-container" style="width: 100px; height: 8px; background: #eee; border-radius: 4px;">
+                    <div class="xp-bar" style="width: 0%; height: 100%; background: #4CAF50; border-radius: 4px;"></div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- View: Chapters List -->
+        <section id="chapters-view" class="view-section active">
+            <div class="section-header">
+                <h2>探索章節</h2>
+                <p>循序漸進，掌握攝影的每一個細節</p>
+            </div>
+            <div id="chapters-container" class="grid-layout">
+                <!-- Chapters will be injected here -->
+                <div class="loading-spinner">載入中...</div>
+            </div>
+        </section>
+
+        <!-- View: Task List (Inside a Chapter) -->
+        <section id="tasks-view" class="view-section hidden">
+            <div class="back-link" onclick="app.showView('chapters-view')">← 返回章節列表</div>
+            <div class="chapter-info-card">
+                <h2 id="current-chapter-title">章節標題</h2>
+                <p id="current-chapter-desc">章節說明...</p>
+            </div>
+            <div id="tasks-container" class="list-layout">
+                <!-- Tasks will be injected here -->
+            </div>
+        </section>
+
+        <!-- View: Task Detail & Submission -->
+        <section id="submission-view" class="view-section hidden">
+            <div class="back-link" onclick="app.showView('tasks-view')">← 返回任務列表</div>
+            <div class="split-layout">
+                <div class="task-instructions">
+                    <span class="badge" id="task-difficulty">難度 1</span>
+                    <h2 id="task-title">任務標題</h2>
+                    <div class="concept-card">
+                        <h3>觀念 Concept</h3>
+                        <p id="task-concept">這裡會顯示攝影觀念...</p>
+                    </div>
+                    <div class="instruction-box">
+                        <h3>拍攝指引</h3>
+                        <p id="task-instructions">如何拍攝...</p>
+                        <ul id="task-constraints">
+                            <!-- constraints -->
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="submission-form-container">
+                    <h3>提交作品</h3>
+                    <form id="submission-form">
+                        <input type="hidden" id="submit-task-id" name="taskId">
+
+                        <div class="form-group">
+                            <label>上傳照片 (Max 5)</label>
+                            <input type="file" id="submit-photos" name="photos" multiple accept="image/*" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label>題材分類</label>
+                            <select id="submit-subject" name="subject">
+                                <option value="portrait">人像 (Portrait)</option>
+                                <option value="landscape">風景 (Landscape)</option>
+                                <option value="still">靜物 (Still Life)</option>
+                                <option value="street">街拍 (Street)</option>
+                                <option value="other">其他</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>自我評分 (1-5)</label>
+                            <div class="range-group">
+                                <span>清晰度</span> <input type="range" name="rating_sharpness" min="1" max="5" value="3">
+                            </div>
+                            <div class="range-group">
+                                <span>曝光</span> <input type="range" name="rating_exposure" min="1" max="5" value="3">
+                            </div>
+                            <div class="range-group">
+                                <span>構圖</span> <input type="range" name="rating_composition" min="1" max="5" value="3">
+                            </div>
+                            <div class="range-group">
+                                <span>光線</span> <input type="range" name="rating_lighting" min="1" max="5" value="3">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>反思心得</label>
+                            <textarea id="submit-reflection" name="reflection" rows="3"
+                                placeholder="這次拍攝你學到了什麼？遇到了什麼困難？"></textarea>
+                        </div>
+
+                        <div class="form-group" style="display: flex; align-items: center; gap: 10px;">
+                            <input type="checkbox" id="submit-is-public" name="isPublic" style="width: auto;">
+                            <label for="submit-is-public" style="margin: 0;">📢 公開此作品（讓其他使用者可以看到並按讚）</label>
+                        </div>
+
+                        <button type="submit" class="btn-primary">提交任務</button>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- View: Gallery -->
+        <section id="gallery-view" class="view-section hidden">
+            <div class="section-header">
+                <h2>作品牆</h2>
+                <p>記錄你的每一次快門</p>
+            </div>
+            <!-- Tab Switcher -->
+            <div class="tab-switcher" style="margin: 20px 0; text-align: center;">
+                <button class="tab-btn active" data-tab="my" onclick="app.switchGalleryTab('my')">我的作品</button>
+                <button class="tab-btn" data-tab="public" onclick="app.switchGalleryTab('public')">公開作品</button>
+            </div>
+            <div id="gallery-container" class="masonry-layout">
+                <!-- Gallery items injected here -->
+                <div class="empty-state">暫無作品</div>
+            </div>
+        </section>
+
+        <!-- View: Monthly Review -->
+        <section id="review-view" class="view-section hidden">
+            <div class="section-header">
+                <h2>每月回顧</h2>
+                <p>檢視成長軌跡</p>
+            </div>
+            <div class="review-dashboard">
+                <!-- Overview Cards -->
+                <div class="stats-overview">
+                    <div class="stat-card">
+                        <h3>本月任務完成</h3>
+                        <span class="stat-value" id="review-task-count">0</span>
+                        <span class="stat-change" id="review-task-change">--</span>
+                    </div>
+                    <div class="stat-card">
+                        <h3>累積拍攝張數</h3>
+                        <span class="stat-value" id="review-photo-count">0</span>
+                        <span class="stat-change" id="review-photo-change">--</span>
+                    </div>
+                    <div class="stat-card">
+                        <h3>章節解鎖進度</h3>
+                        <span class="stat-value" id="review-chapter-progress">0/8</span>
+                    </div>
+                </div>
+
+                <!-- Detailed Analysis -->
+                <div class="split-layout" style="margin-top: 40px;">
+                    <!-- Skill Analysis -->
+                    <div class="analysis-card">
+                        <h3>📸 攝影能力雷達</h3>
+                        <div class="skill-bars">
+                            <div class="skill-item">
+                                <label>清晰度 (Sharpness)</label>
+                                <div class="progress-bg">
+                                    <div class="progress-fill" id="skill-sharpness" style="width: 0%"></div>
+                                </div>
+                            </div>
+                            <div class="skill-item">
+                                <label>曝光 (Exposure)</label>
+                                <div class="progress-bg">
+                                    <div class="progress-fill" id="skill-exposure" style="width: 0%"></div>
+                                </div>
+                            </div>
+                            <div class="skill-item">
+                                <label>構圖 (Composition)</label>
+                                <div class="progress-bg">
+                                    <div class="progress-fill" id="skill-composition" style="width: 0%"></div>
+                                </div>
+                            </div>
+                            <div class="skill-item">
+                                <label>光線 (Lighting)</label>
+                                <div class="progress-bg">
+                                    <div class="progress-fill" id="skill-lighting" style="width: 0%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Learning Path -->
+                    <div class="analysis-card">
+                        <h3>📈 學習軌跡</h3>
+                        <ul id="review-recent-activity" class="activity-list">
+                            <li>載入中...</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- View: Auth (Login/Register) -->
+        <section id="auth-view" class="view-section hidden">
+            <div class="auth-container"
+                style="max-width: 400px; margin: 50px auto; padding: 30px; border: 1px solid #000; border-radius: 4px;">
+                <h2 id="auth-title" style="text-align: center; margin-bottom: 20px;">登入 PhotoMission</h2>
+
+                <form id="auth-form">
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" name="email" required placeholder="name@example.com">
+                    </div>
+
+                    <div class="form-group">
+                        <label>密碼 Password</label>
+                        <input type="password" name="password" required placeholder="********">
+                        <small style="color: #666; font-size: 0.8em; display: block; margin-top: 5px;">密碼需大於 8
+                            碼，並包含英文及數字</small>
+                    </div>
+
+                    <div class="form-group hidden" id="nickname-group">
+                        <label>暱稱 Nickname</label>
+                        <input type="text" name="nickname" placeholder="Your Name">
+                    </div>
+
+                    <button type="submit" class="btn-primary" id="auth-submit-btn">登入</button>
+                </form>
+
+                <p style="margin-top: 15px; text-align: center; font-size: 0.9em;">
+                    <a href="#" id="toggle-auth-mode">沒有帳號？點此註冊</a>
+                </p>
+            </div>
+        </section>
+
+        <!-- View: Edit Modal -->
+        <div id="edit-modal" class="modal hidden">
+            <div class="modal-content">
+                <h3>編輯心得</h3>
+                <input type="hidden" id="edit-submission-id">
+                <textarea id="edit-reflection-input"></textarea>
+                <div class="modal-actions">
+                    <button id="edit-cancel-btn" class="btn-sm">取消</button>
+                    <button id="edit-save-btn" class="btn-primary">儲存</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- View: Message Modal (New) -->
+        <div id="message-modal" class="modal hidden">
+            <div class="modal-content" style="max-width: 300px; text-align: center;">
+                <h3 id="msg-modal-title" style="margin-bottom: 15px;">提示</h3>
+                <p id="msg-modal-text" style="white-space: pre-line; margin-bottom: 20px; color: #333;"></p>
+                <div class="modal-actions" style="justify-content: center;">
+                    <button id="msg-modal-ok-btn" class="btn-primary" style="width: 100%;">確定</button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script src="js/eventBus.js"></script>
+    <script src="js/componentFactory.js"></script>
+    <script src="js/app.js?v=9"></script>
+</body>
+
+</html>
